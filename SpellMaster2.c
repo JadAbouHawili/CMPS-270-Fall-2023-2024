@@ -133,16 +133,11 @@ void addEdge(struct Graph * Graph, char source[], char destination[]){
 struct Graph* buildGraph(){
     struct Graph* Graph = createGraph(numberOfSpells);
     
-    char* currentWord;
-    char* otherWord;
+    char currentWord[150];
+    char otherWord[150];
 
     int i,j,k;
     for(i=0; i<numberOfSpells; ++i){
-        k=0;
-        while(ArrayOfSpells[i][k] != '\0'){
-            ++k;
-        }
-        currentWord = (char*)malloc(sizeof(char) * (k+1));
         k = 0;
         while(ArrayOfSpells[i][k] != '\0'){
             currentWord[k] = ArrayOfSpells[i][k];
@@ -151,11 +146,6 @@ struct Graph* buildGraph(){
         currentWord[k] = '\0';
         for(j=0; j<numberOfSpells; ++j){
             if(i != j){
-                k=0;
-                while(ArrayOfSpells[i][k] != '\0'){
-                    ++k;
-                }
-                otherWord = (char*)malloc(sizeof(char) * (k+1));
                 k = 0;
                 while(ArrayOfSpells[i][k] != '\0'){
                     otherWord[k] = ArrayOfSpells[i][k];
