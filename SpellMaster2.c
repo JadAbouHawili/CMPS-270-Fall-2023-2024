@@ -44,6 +44,8 @@ void readSpells(){
     int i;
     FILE * fpointer;
     fpointer = fopen("spells.txt", "r");
+    int numberOfSpells;
+    fscanf(fpointer , "%d", &numberOfSpells);
     if(fpointer == NULL){
         printf("Could Not Open File! \n");
         numberOfSpells = 0;
@@ -128,7 +130,7 @@ void addEdge(struct Graph * Graph, char source[], char destination[]){
         }
     }
 }
-struct Graph* buildGraph(){
+struct Graph* buildGraph(int numberOfSpells){
     struct Graph* Graph = createGraph(numberOfSpells);
     
     char* currentWord;
