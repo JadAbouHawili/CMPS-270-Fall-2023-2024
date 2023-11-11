@@ -146,6 +146,7 @@ struct Graph* buildGraph(){
         k = 0;
         while(ArrayOfSpells[i][k] != '\0'){
             currentWord[k] = ArrayOfSpells[i][k];
+            ++k;
         }
         currentWord[k] = '\0';
         for(j=0; j<numberOfSpells; ++j){
@@ -158,6 +159,7 @@ struct Graph* buildGraph(){
                 k = 0;
                 while(ArrayOfSpells[i][k] != '\0'){
                     otherWord[k] = ArrayOfSpells[i][k];
+                    ++k;
                 }
                 otherWord[k] = '\0';
                 if(condition(currentWord, otherWord)){
