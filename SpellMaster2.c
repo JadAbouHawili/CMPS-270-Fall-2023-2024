@@ -5,6 +5,7 @@
 char** ArrayOfSpells;
 int numberOfWords;
 int const sizeOfSpells = 150;
+int numberOfSpells;
 
 struct Word{
     char * word;
@@ -44,7 +45,6 @@ void readSpells(){
     int i;
     FILE * fpointer;
     fpointer = fopen("spells.txt", "r");
-    int numberOfSpells;
     fscanf(fpointer , "%d", &numberOfSpells);
     if(fpointer == NULL){
         printf("Could Not Open File! \n");
@@ -130,7 +130,7 @@ void addEdge(struct Graph * Graph, char source[], char destination[]){
         }
     }
 }
-struct Graph* buildGraph(int numberOfSpells){
+struct Graph* buildGraph(){
     struct Graph* Graph = createGraph(numberOfSpells);
     
     char* currentWord;
