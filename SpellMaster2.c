@@ -139,6 +139,14 @@ struct Graph* buildGraph(){
     int i,j,k;
     for(i=0; i<numberOfSpells; ++i){
         k = 0;
+        while(ArraysOfSpells[i][k] != '\0'){
+            currentWord[k] = ArraysOfSpells[i][k];
+            ++k;
+        }
+        Graph->adjList[i] = createWord(currentWord);
+    }
+    for(i=0; i<numberOfSpells; ++i){
+        k = 0;
         while(ArrayOfSpells[i][k] != '\0'){
             currentWord[k] = ArrayOfSpells[i][k];
             ++k;
