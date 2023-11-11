@@ -2,6 +2,10 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+char** ArrayOfSpells;
+int numberOfWords;
+int const sizeOfSpells = 150;
+
 struct Word{
     char * word;
     struct Word * nextWord;
@@ -36,7 +40,29 @@ struct Word* createWord(char word[]){
 
     return newWord;
 }
+void readSpells(){
+    int i;
+    FILE * fpointer;
+    fpointer = fopen("spells.txt", "r");
+    if(fpointer == NULL){
+        printf("Could Not Open File! \n");
+        numberOfSpells = 0;
+        return;
+    }
+    if(fscanf(fpointer, "%d", &numberOfSpells) != 1){
+        printf("Please make sure the file starts with an integer to denote the number of Spells.\n");
+        numberOfSpells = 0;
+        fclose(fpointer);
+        return;
+    }
+    ArrayOfSpells = (char **)malloc(numberOfSpells * sizeof(char *));
+    for(i=0; i<numberOfSpells; ++i){
+        ArrayOfSpells[i] = (char* )malloc((sizeOfSpells+1) * sizeof(char));
+        fscanf(fpointer, "%s", ArrayOfSpells[i]);
+    }
 
+    fclose(fpointer);
+}
 struct Graph * createGraph(int numWords){
     struct Graph * Graph = (struct Graph* ) malloc(sizeof(struct Graph));
 
@@ -102,7 +128,46 @@ void addEdge(struct Graph * Graph, char source[], char destination[]){
         }
     }
 }
+struct Graph* buildGraph(){
+    struct Graph* Graph = createGraph(numberOfSpells);
+    
+    char* currentWord;
+    char* otherWord;
 
+    int i,j,k;
+    for(i=0; i<numberOfSpells; ++i){
+        k=0;
+        while(ArrayOfSpells[i][k] != '\0'){
+            ++k;
+        }
+        currentWord = (char*)malloc(sizeof(char) * (k+1));
+        k = 0;
+        while(ArrayOfSpells[i][k] != '\0'){
+            currentWord[k] = ArrayOfSpells[i][k];
+        }
+        currentWord[k] = '\0';
+        for(j=0; j<numberOfSpells; ++j){
+            if(i != j){
+                k=0;
+                while(ArrayOfSpells[i][k] != '\0'){
+                    ++k;
+                }
+                otherWord = (char*)malloc(sizeof(char) * (k+1));
+                k = 0;
+                while(ArrayOfSpells[i][k] != '\0'){
+                    otherWord[k] = ArrayOfSpells[i][k];
+                }
+                otherWord[k] = '\0';
+                if(condition(currentWord, otherWord)){
+                    addEdge(Graph, currentWord, otherWord);
+                }
+            }
+        }
+        free(currentWord);
+        free(otherWord);
+    }
+    return Graph;
+}
 void printGraph(struct Graph* Graph){
     int i;
     for(i=0; i<Graph->numWords; ++i){
