@@ -45,7 +45,6 @@ void readSpells(){
     int i;
     FILE * fpointer;
     fpointer = fopen("spells.txt", "r");
-    fscanf(fpointer , "%d", &numberOfSpells);
     if(fpointer == NULL){
         printf("Could Not Open File! \n");
         numberOfSpells = 0;
@@ -57,6 +56,7 @@ void readSpells(){
         fclose(fpointer);
         return;
     }
+    fscanf(fpointer , "%d", &numberOfSpells);
     ArrayOfSpells = (char **)malloc(numberOfSpells * sizeof(char *));
     for(i=0; i<numberOfSpells; ++i){
         ArrayOfSpells[i] = (char* )malloc((sizeOfSpells+1) * sizeof(char));
@@ -65,15 +65,15 @@ void readSpells(){
 
     fclose(fpointer);
 }
-struct Graph * createGraph(int numWords){
+struct Graph * createGraph(){
     struct Graph * Graph = (struct Graph* ) malloc(sizeof(struct Graph));
 
-    Graph->numWords = numWords;
+    Graph->numWords = numberOfSpells;
 
-    Graph->adjList = (struct Word**)malloc(sizeof(struct Word*) * numWords);
+    Graph->adjList = (struct Word**)malloc(sizeof(struct Word*) * numberOfSpells);
 
     int i;
-    for(i=0; i<numWords; ++i){
+    for(i=0; i<numberOfSpells; ++i){
         Graph->adjList[i] = NULL;
     }
 
@@ -121,6 +121,12 @@ void addEdge(struct Graph * Graph, char source[], char destination[]){
     int i;
     for(i=0; i<Graph->numWords; ++i){
         struct Word* current = Graph->adjList[i];
+        char* w = current->word;
+        /*
+        char w2[strlen(w)];
+        strcpy(w2, w);
+        */
+
         if(areEqual(source, current->word)){
             while(current->nextWord != NULL){
                     current = current->nextWord;
@@ -131,7 +137,7 @@ void addEdge(struct Graph * Graph, char source[], char destination[]){
     }
 }
 struct Graph* buildGraph(){
-    struct Graph* Graph = createGraph(numberOfSpells);
+    struct Graph* Graph = createGraph();
     
     char* currentWord;
     char* otherWord;
@@ -146,6 +152,7 @@ struct Graph* buildGraph(){
         k = 0;
         while(ArrayOfSpells[i][k] != '\0'){
             currentWord[k] = ArrayOfSpells[i][k];
+            ++k;
         }
         currentWord[k] = '\0';
         for(j=0; j<numberOfSpells; ++j){
@@ -158,6 +165,7 @@ struct Graph* buildGraph(){
                 k = 0;
                 while(ArrayOfSpells[i][k] != '\0'){
                     otherWord[k] = ArrayOfSpells[i][k];
+                    ++k;
                 }
                 otherWord[k] = '\0';
                 if(condition(currentWord, otherWord)){
@@ -381,8 +389,10 @@ int Kazdoora(struct Graph* Graph, bool myTurn, int lastCharCount[], int firstCha
         }   
 }
 int main(){
-    struct Graph* Graph = createGraph(9);
-
+    readSpells();
+    struct Graph* Graph = buildGraph();
+    printGraph(Graph);
+/*
     char words[20][20] = {"einstein", "newton", "number", "nice", "reimann", "shorter", "yes", "energy", "xiolio"};
 
     int lastCharCount[26];
@@ -439,4 +449,5 @@ int main(){
     printGraph(Graph);
     int x = Kazdoora(Graph, false, lastCharCount, firstCharCount);
     freeGraph(Graph);
+        */
 }
