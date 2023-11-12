@@ -10,13 +10,11 @@ struct Word{
     char * word;
     struct Word * nextWord;
     bool used;
+    int bracnhLength;
 };
-
 struct Graph{
-    int numWords;
     struct Word ** adjList;
 };
-
 struct Word* createWord(char word[]){
     struct Word* newWord =  (struct Word*)malloc(sizeof(struct Word));
 
@@ -37,10 +35,10 @@ struct Word* createWord(char word[]){
 
     newWord->nextWord = NULL;
     newWord->used = false;
+    newWord->bracnhLength = 0;
 
     return newWord;
 }
-
 void readSpells(){
     int i;
 
@@ -76,13 +74,10 @@ void readSpells(){
 
     fclose(fpointer);
 }
-
 struct Graph * createGraph(int numWords){
     struct Graph * Graph = (struct Graph* ) malloc(sizeof(struct Graph));
 
-    Graph->numWords = numWords;
-
-    Graph->adjList = (struct Word**)malloc(sizeof(struct Word*) * numWords);
+    Graph->adjList = (struct Word**)malloc(sizeof(struct Word*) * numberOfSpells);
 
     int i;
     for(i=0; i<numWords; ++i){
@@ -91,7 +86,6 @@ struct Graph * createGraph(int numWords){
 
     return Graph;
 }
-
 bool areEqual(char word1[], char word2[]){
     int size1 = 0;
     int size2 = 0;
@@ -115,7 +109,6 @@ bool areEqual(char word1[], char word2[]){
 
     return true;
 }
-
 char lastCharOf(char word[]){
     int i = 0;
     while(word[i] != '\0'){
@@ -123,26 +116,23 @@ char lastCharOf(char word[]){
     }
     return word[i-1];
 }
-
-bool condition(char word1[], char word2[]){
+bool condition(char word1[], char word2[]){  
     return lastCharOf(word1) == word2[0];
 }
-
 void addEdge(struct Graph * Graph, char source[], char destination[]){
     struct Word* newWord = createWord(destination);
     int i;
-    for(i=0; i<Graph->numWords; ++i){
+    for(i=0; i<numberOfSpells; ++i){
         struct Word* current = Graph->adjList[i];
         if(areEqual(source, current->word)){
             while(current->nextWord != NULL){
                     current = current->nextWord;
-                }
+            }
             current->nextWord = newWord;
             break;
         }
     }
 }
-
 struct Graph* buildGraph(){
     struct Graph* Graph = createGraph(numberOfSpells);
     char currentWord[sizeOfSpells];
@@ -157,34 +147,27 @@ struct Graph* buildGraph(){
             if(i != j){
                 if(condition(ArrayOfSpells[i], ArrayOfSpells[j])){
                     addEdge(Graph, ArrayOfSpells[i], ArrayOfSpells[j]);
+                    Graph->adjList[i]->bracnhLength++;
                 }
             }
         }
     }
     return Graph;
 }
-
 void printGraph(struct Graph* Graph){
     int i;
-    for(i=0; i<Graph->numWords; ++i){
+    for(i=0; i<numberOfSpells; ++i){
         struct Word* current= Graph->adjList[i];
         while(current != NULL){
-            if(current->used){
-                printf("[%s](used)-> ", current->word);
-                current = current->nextWord;
-            }
-            
-            else{
-                printf("[%s](unused)-> ", current->word);
-                current = current->nextWord;
-            }
+            printf("[%s][%d]-> ", current->word, current->bracnhLength);
+            current = current->nextWord;
         }
-        printf("\n\n");
+        printf("\n");
     }
 }
 void freeGraph(struct Graph* Graph){
     int i;
-    for(i=0; i<Graph->numWords; ++i){
+    for(i=0; i<numberOfSpells; ++i){
         struct Word* current = Graph->adjList[i];
         struct Word* previous = NULL;
         if(current->nextWord != NULL){
@@ -201,7 +184,7 @@ void freeGraph(struct Graph* Graph){
 }
 int isInAdjList(struct Graph* Graph, char choice[]){
     int i;
-    for(i=0; i<Graph->numWords; ++i){
+    for(i=0; i<numberOfSpells; ++i){
         if(areEqual(choice, Graph->adjList[i]->word)){
             return i;
         }
@@ -210,16 +193,18 @@ int isInAdjList(struct Graph* Graph, char choice[]){
 }
 void updateGraph(struct Graph* Graph, char choice[]){
     int i;
-    for(i=0; i<Graph->numWords; ++i){
+    for(i=0; i<numberOfSpells; ++i){
         struct Word* current = Graph->adjList[i];
         if(areEqual(current->word, choice)){
             current->used = true;
+            current->bracnhLength--;
         }
-        if(condition(current->word, choice) && current->nextWord != NULL){
+        if(condition(current->word, choice) && current->bracnhLength != 0){
             current = current->nextWord;
             while(current != NULL){
                 if(areEqual(current->word,choice)){
                     current->used = true;
+                    current->bracnhLength--;
                     break;
                 }
                 current = current->nextWord;
@@ -234,22 +219,12 @@ void printArray(int A[], int size){
     }
     printf("\n");
 }
-void getCounterArrays(int lastCharcount[], int firstCharCount[]){
-    int i;
-    for(i=0; i<26; ++i){
-        lastCharcount[i] = 0;
-        firstCharCount[i] = 0;
-    }
-    for(i=0; i<numberOfSpells; ++i){
-        lastCharcount[lastCharOf(ArrayOfSpells[i]) - 'a']++;
-        firstCharCount[ArrayOfSpells[i][0] -'a']++;
-    }
-}
 // Easy Mode
-int Kazdoora(struct Graph* Graph, bool myTurn, int lastCharCount[], int firstCharCount[]){
+int Kazdoora(struct Graph* Graph, bool myTurn){
     char oppChoice[150];
     char myChoice[150];
     int i;
+    bool win;
     if(!myTurn){
         printf("Enter your choice: ");
         scanf("%s", oppChoice);
@@ -261,20 +236,17 @@ int Kazdoora(struct Graph* Graph, bool myTurn, int lastCharCount[], int firstCha
             printf("I win :)");
             return 1;
         }
-        // If it is update the counter arrays
-        if(lastCharCount[lastCharOf(oppChoice) - 'a'] > 0) lastCharCount[lastCharOf(oppChoice) - 'a']--;
-        if(firstCharCount[oppChoice[0] - 'a'] >0 ) firstCharCount[oppChoice[0] - 'a']--;
 
 
         struct Word* current = Graph->adjList[i];
         int j = 0;
 
         // If there is no where to go we lose
-        if(current->nextWord == NULL){
+        if(current->bracnhLength == 0){
             printf("Congrats you win \n");
             return 0;
         }
-        else // We have a choice
+        else // We may have a choice
         {
             current = current->nextWord;
             while(current!= NULL){
@@ -293,14 +265,18 @@ int Kazdoora(struct Graph* Graph, bool myTurn, int lastCharCount[], int firstCha
             ++j;
         }
         myChoice[j] = '\0';
-        // Update the counter arrays
-        if(lastCharCount[lastCharOf(oppChoice) - 'a'] > 0) lastCharCount[lastCharOf(oppChoice) - 'a']--;
-        if(firstCharCount[oppChoice[0] - 'a'] >0 ) firstCharCount[oppChoice[0] - 'a']--;
 
         printf("My choice is: %s\n", myChoice);
 
-        if(lastCharCount[lastCharOf(myChoice) - 'a'] ==0 && firstCharCount[lastCharOf(myChoice) - 'a'] != 0){
-            printf("I win ha ha");
+        for(i=0; i<numberOfSpells; ++i){
+            if(condition(myChoice, ArrayOfSpells[i]) && Graph->adjList[i]->bracnhLength != 0){
+                win = false;
+                break;
+            }
+            else win = true;
+        }
+        if(win){
+            printf("I win, you ran out of options! Ha Ha");
             return 1;
         }
         updateGraph(Graph, myChoice);
@@ -308,31 +284,23 @@ int Kazdoora(struct Graph* Graph, bool myTurn, int lastCharCount[], int firstCha
     }
     else{
         i = 0;
-        while(Graph->adjList[Graph->numWords / 2]->word[i] != '\0'){
-            myChoice[i] = Graph->adjList[Graph->numWords / 2]->word[i];
+        while(Graph->adjList[numberOfSpells/ 2]->word[i] != '\0'){
+            myChoice[i] = Graph->adjList[numberOfSpells / 2]->word[i];
             ++i;
         }
         myChoice[i] = '\0';
         printf("My Choice: %s", myChoice);
         updateGraph(Graph, myChoice);
-
-        if(lastCharCount[lastCharOf(oppChoice) - 'a'] > 0) lastCharCount[lastCharOf(oppChoice) - 'a']--;
-        if(firstCharCount[oppChoice[0] - 'a'] >0 ) firstCharCount[oppChoice[0] - 'a']--;
     }
     while(true){
             printf("Enter your choice: ");
             scanf("%s", oppChoice);
             i = isInAdjList(Graph, oppChoice);
             if(i == -1){
-                printf("Your choice is not in the list. \n");
+                printf("Your choice is not int he list. \n");
                 printf("I win :)");
                 return 1;
             }
-            if(lastCharCount[lastCharOf(oppChoice) - 'a'] > 0) lastCharCount[lastCharOf(oppChoice) - 'a']--;
-            if(firstCharCount[oppChoice[0] - 'a'] >0 ) firstCharCount[oppChoice[0] - 'a']--;
-
-            printArray(firstCharCount,26);
-            printArray(lastCharCount,26);
             struct Word* current = Graph->adjList[i];
             if(current->used){
                 printf("You chose a previously chosen world. \n");
@@ -345,7 +313,7 @@ int Kazdoora(struct Graph* Graph, bool myTurn, int lastCharCount[], int firstCha
                 return 1;
             }
             int j = 0;
-            if(current->nextWord == NULL){
+            if(current->bracnhLength == 0){
                 printf("Congrats you win \n");
                 return 0;
             }
@@ -367,17 +335,21 @@ int Kazdoora(struct Graph* Graph, bool myTurn, int lastCharCount[], int firstCha
                 ++j;
             }
             myChoice[j] = '\0';
-            if(lastCharCount[lastCharOf(oppChoice) - 'a'] > 0) lastCharCount[lastCharOf(oppChoice) - 'a']--;
-            if(firstCharCount[oppChoice[0] - 'a'] >0 ) firstCharCount[oppChoice[0] - 'a']--;
 
-            printArray(firstCharCount,26);
-            printArray(lastCharCount,26);
             printf("My choice is: %s\n", myChoice);
 
-            if(lastCharCount[lastCharOf(myChoice) - 'a'] ==0 && firstCharCount[lastCharOf(myChoice) - 'a'] != 0){
-                printf("I win ha ha");
+            for(i=0; i<numberOfSpells; ++i){
+            if(condition(myChoice, ArrayOfSpells[i]) && Graph->adjList[i]->bracnhLength != 0){
+                win = false;
+                break;
+            }
+            else win = true;
+            }
+            if(win){
+                printf("I win, you ran out of options! Ha Ha");
                 return 1;
             }
+
             updateGraph(Graph, myChoice);
             updateGraph(Graph, oppChoice);
         }   
@@ -386,9 +358,6 @@ int main(){
     readSpells();
     struct Graph* Graph = buildGraph();
     printGraph(Graph);
-    int firstCharCount[26];
-    int lastCharCount[26];
-    getCounterArrays(firstCharCount,lastCharCount);
-    int x = Kazdoora(Graph, false, lastCharCount, firstCharCount);
+    Kazdoora(Graph, false);
     freeGraph(Graph);
 }
