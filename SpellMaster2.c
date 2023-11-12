@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <time.h>
 
 char** ArrayOfSpells;
 int numberOfSpells;
@@ -10,7 +11,7 @@ struct Word{
     char * word;
     struct Word * nextWord;
     bool used;
-    int bracnhLength;
+    int branchLength;
 };
 struct Graph{
     struct Word ** adjList;
@@ -35,11 +36,11 @@ struct Word* createWord(char word[]){
 
     newWord->nextWord = NULL;
     newWord->used = false;
-    newWord->bracnhLength = 0;
+    newWord->branchLength = 0;
 
     return newWord;
 }
-void readSpells(){
+int readSpells(){
     int i;
 
 
@@ -51,7 +52,7 @@ void readSpells(){
     if(fpointer == NULL){
         printf("Could Not Open File! \n");
         numberOfSpells = 0;
-        return;
+        return -1;
     }
 
 
@@ -61,7 +62,7 @@ void readSpells(){
         printf("Please make sure the file starts with an integer to denote the number of Spells.\n");
         numberOfSpells = 0;
         fclose(fpointer);
-        return;
+        return -1;
     }
 
 
@@ -73,6 +74,7 @@ void readSpells(){
     }
 
     fclose(fpointer);
+    return 1;
 }
 struct Graph * createGraph(int numWords){
     struct Graph * Graph = (struct Graph* ) malloc(sizeof(struct Graph));
@@ -147,7 +149,7 @@ struct Graph* buildGraph(){
             if(i != j){
                 if(condition(ArrayOfSpells[i], ArrayOfSpells[j])){
                     addEdge(Graph, ArrayOfSpells[i], ArrayOfSpells[j]);
-                    Graph->adjList[i]->bracnhLength++;
+                    Graph->adjList[i]->branchLength++;
                 }
             }
         }
@@ -159,10 +161,18 @@ void printGraph(struct Graph* Graph){
     for(i=0; i<numberOfSpells; ++i){
         struct Word* current= Graph->adjList[i];
         while(current != NULL){
-            printf("[%s][%d]-> ", current->word, current->bracnhLength);
-            current = current->nextWord;
+            if(current->used){
+                printf("[%s][%d](used)-> ", current->word, current->branchLength);
+                current = current->nextWord;
+                
+            }
+            else{
+                printf("[%s][%d](unused)-> ", current->word, current->branchLength);
+                current = current->nextWord;
+
+            }
         }
-        printf("\n");
+        printf("\n\n");
     }
 }
 void freeGraph(struct Graph* Graph){
@@ -197,14 +207,14 @@ void updateGraph(struct Graph* Graph, char choice[]){
         struct Word* current = Graph->adjList[i];
         if(areEqual(current->word, choice)){
             current->used = true;
-            current->bracnhLength--;
+            current->branchLength--;
         }
-        if(condition(current->word, choice) && current->bracnhLength != 0){
+        if(condition(current->word, choice) && current->branchLength != 0){
             current = current->nextWord;
             while(current != NULL){
                 if(areEqual(current->word,choice)){
                     current->used = true;
-                    current->bracnhLength--;
+                    current->branchLength--;
                     break;
                 }
                 current = current->nextWord;
@@ -223,7 +233,7 @@ int getBranchLength(struct Graph* Graph, char Spell[]){
     int i;
     for(i=0; i<numberOfSpells; ++i){
         if(areEqual(Graph->adjList[i]->word, Spell)){
-            return Graph->adjList[i]->bracnhLength;
+            return Graph->adjList[i]->branchLength;
         }
     }
     return -1;
@@ -261,7 +271,7 @@ int Kazdoora(struct Graph* Graph, bool myTurn){
         int j = 0;
 
         // If there is no where to go we lose
-        if(current->bracnhLength == 0){
+        if(current->branchLength == 0){
             printf("Congrats you win \n");
             return 0;
         }
@@ -288,7 +298,7 @@ int Kazdoora(struct Graph* Graph, bool myTurn){
         printf("My choice is: %s\n", myChoice);
 
         for(i=0; i<numberOfSpells; ++i){
-            if(condition(myChoice, ArrayOfSpells[i]) && Graph->adjList[i]->bracnhLength != 0){
+            if(condition(myChoice, ArrayOfSpells[i]) && Graph->adjList[i]->branchLength != 0){
                 win = false;
                 break;
             }
@@ -332,7 +342,7 @@ int Kazdoora(struct Graph* Graph, bool myTurn){
                 return 1;
             }
             int j = 0;
-            if(current->bracnhLength == 0){
+            if(current->branchLength == 0){
                 printf("Congrats you win \n");
                 return 0;
             }
@@ -358,7 +368,7 @@ int Kazdoora(struct Graph* Graph, bool myTurn){
             printf("My choice is: %s\n", myChoice);
 
             for(i=0; i<numberOfSpells; ++i){
-            if(condition(myChoice, ArrayOfSpells[i]) && Graph->adjList[i]->bracnhLength != 0){
+            if(condition(myChoice, ArrayOfSpells[i]) && Graph->adjList[i]->branchLength != 0){
                 win = false;
                 break;
             }
@@ -399,7 +409,7 @@ int Rehle(struct Graph* Graph, bool myTurn){
         struct Word* temp1 = NULL;
 
         // If there is no where to go we lose
-        if(current->bracnhLength == 0){
+        if(current->branchLength == 0){
             printf("Congrats you win \n");
             return 0;
         }
@@ -445,7 +455,7 @@ int Rehle(struct Graph* Graph, bool myTurn){
 
 
         for(i=0; i<numberOfSpells; ++i){
-            if(condition(myChoice, ArrayOfSpells[i]) && Graph->adjList[i]->bracnhLength != 0){
+            if(condition(myChoice, ArrayOfSpells[i]) && Graph->adjList[i]->branchLength != 0){
                 win = false;
                 break;
             }
@@ -479,7 +489,7 @@ int Rehle(struct Graph* Graph, bool myTurn){
         printf("My choice: %s\n", myChoice);
         
         for(i=0; i<numberOfSpells; ++i){
-            if(condition(myChoice, ArrayOfSpells[i]) && Graph->adjList[i]->bracnhLength != 0){
+            if(condition(myChoice, ArrayOfSpells[i]) && Graph->adjList[i]->branchLength != 0){
                 win = false;
                 break;
             }
@@ -511,7 +521,7 @@ int Rehle(struct Graph* Graph, bool myTurn){
                 printf("Oops I win \n");
                 return 1;
             }
-            if(current->bracnhLength == 0){
+            if(current->branchLength == 0){
                 printf("Congrats you win \n");
                 return 0;
             }
@@ -520,7 +530,7 @@ int Rehle(struct Graph* Graph, bool myTurn){
             struct Word* temp1 = NULL;
 
             // If there is no where to go we lose
-            if(current->bracnhLength == 0){
+            if(current->branchLength == 0){
                 printf("Congrats you win \n");
                 return 0;
             }
@@ -564,7 +574,7 @@ int Rehle(struct Graph* Graph, bool myTurn){
         printf("My choice: %s\n", myChoice);
 
         for(i=0; i<numberOfSpells; ++i){
-            if(condition(myChoice, ArrayOfSpells[i]) && Graph->adjList[i]->bracnhLength != 0){
+            if(condition(myChoice, ArrayOfSpells[i]) && Graph->adjList[i]->branchLength != 0){
                 win = false;
                 break;
             }
@@ -581,9 +591,17 @@ int Rehle(struct Graph* Graph, bool myTurn){
 }
 
 int main(){
-    readSpells();
-    struct Graph* Graph = buildGraph();
-    printGraph(Graph);
-    Rehle(Graph, true);
-    freeGraph(Graph);
+    if(readSpells()!=-1){
+        struct Graph* Graph = buildGraph();
+        printGraph(Graph);
+
+            //randomize who starts first
+        srand(time(NULL));
+        bool myturn;
+        if(rand() % 2 ==0) myturn=false;
+        else myturn=true;
+
+        Rehle(Graph, myturn);
+        freeGraph(Graph);
+    }
 }
