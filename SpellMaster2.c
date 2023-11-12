@@ -10,7 +10,7 @@ struct Word{
     char * word;
     struct Word * nextWord;
     bool used;
-    int bracnhLength;
+    int branchLength;
 };
 struct Graph{
     struct Word ** adjList;
@@ -35,7 +35,7 @@ struct Word* createWord(char word[]){
 
     newWord->nextWord = NULL;
     newWord->used = false;
-    newWord->bracnhLength = 0;
+    newWord->branchLength = 0;
 
     return newWord;
 }
@@ -147,7 +147,7 @@ struct Graph* buildGraph(){
             if(i != j){
                 if(condition(ArrayOfSpells[i], ArrayOfSpells[j])){
                     addEdge(Graph, ArrayOfSpells[i], ArrayOfSpells[j]);
-                    Graph->adjList[i]->bracnhLength++;
+                    Graph->adjList[i]->branchLength++;
                 }
             }
         }
@@ -159,7 +159,7 @@ void printGraph(struct Graph* Graph){
     for(i=0; i<numberOfSpells; ++i){
         struct Word* current= Graph->adjList[i];
         while(current != NULL){
-            printf("[%s][%d]-> ", current->word, current->bracnhLength);
+            printf("[%s][%d]-> ", current->word, current->branchLength);
             current = current->nextWord;
         }
         printf("\n");
@@ -197,14 +197,14 @@ void updateGraph(struct Graph* Graph, char choice[]){
         struct Word* current = Graph->adjList[i];
         if(areEqual(current->word, choice)){
             current->used = true;
-            current->bracnhLength--;
+            current->branchLength--;
         }
-        if(condition(current->word, choice) && current->bracnhLength != 0){
+        if(condition(current->word, choice) && current->branchLength != 0){
             current = current->nextWord;
             while(current != NULL){
                 if(areEqual(current->word,choice)){
                     current->used = true;
-                    current->bracnhLength--;
+                    current->branchLength--;
                     break;
                 }
                 current = current->nextWord;
@@ -242,7 +242,7 @@ int Kazdoora(struct Graph* Graph, bool myTurn){
         int j = 0;
 
         // If there is no where to go we lose
-        if(current->bracnhLength == 0){
+        if(current->branchLength == 0){
             printf("Congrats you win \n");
             return 0;
         }
@@ -269,7 +269,7 @@ int Kazdoora(struct Graph* Graph, bool myTurn){
         printf("My choice is: %s\n", myChoice);
 
         for(i=0; i<numberOfSpells; ++i){
-            if(condition(myChoice, ArrayOfSpells[i]) && Graph->adjList[i]->bracnhLength != 0){
+            if(condition(myChoice, ArrayOfSpells[i]) && Graph->adjList[i]->branchLength != 0){
                 win = false;
                 break;
             }
@@ -313,7 +313,7 @@ int Kazdoora(struct Graph* Graph, bool myTurn){
                 return 1;
             }
             int j = 0;
-            if(current->bracnhLength == 0){
+            if(current->branchLength == 0){
                 printf("Congrats you win \n");
                 return 0;
             }
@@ -339,7 +339,7 @@ int Kazdoora(struct Graph* Graph, bool myTurn){
             printf("My choice is: %s\n", myChoice);
 
             for(i=0; i<numberOfSpells; ++i){
-            if(condition(myChoice, ArrayOfSpells[i]) && Graph->adjList[i]->bracnhLength != 0){
+            if(condition(myChoice, ArrayOfSpells[i]) && Graph->adjList[i]->branchLength != 0){
                 win = false;
                 break;
             }
