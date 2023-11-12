@@ -371,14 +371,13 @@ void IAmThinking(struct Graph* Graph, struct Word* Word, bool win, char myChoice
             while(!isStringStackEmpty(&possibilities)){
                 pop(&possibilities, myChoice);
             }
-            coppyArray(temp, myChoice);
+            copyArray(temp, myChoice);
             return;
         }
         setFlagsToFalse(Graph);
         win = initialState;
         current = current->nextWord;
     }
-    return NULL;
 }
 // Easy Mode
 int Kazdoora(struct Graph* Graph, bool myTurn){
@@ -547,7 +546,6 @@ int Rehle(struct Graph* Graph, bool myTurn){
             current = current->nextWord;
             while(current!= NULL){
                 if(!current->used){
-                    temp1 = current;
                     break;
                 }
                 else current = current->nextWord;
@@ -558,22 +556,19 @@ int Rehle(struct Graph* Graph, bool myTurn){
             }
         }
         myChoice[0] = '\0';
-        IAmThinking(Graph,oppChoice,false,myChoice);
+        IAmThinking(Graph,createWord(oppChoice),false,myChoice);
 
         if(myChoice[0] == '\0'){
-            int maxBracnhSize = -1;
+            int maxBranchSize = -1;
             struct Word* current = Graph->adjList[i]->nextWord;
             struct Word* temp = NULL;
             while(current != NULL){
-                if(current->branchLength >= maxBracnhSize){
-                    maxBracnhSize = current->branchLength;
+                if(current->branchLength >= maxBranchSize){
+                    maxBranchSize = current->branchLength;
                     temp = current;
                 }
             }
             copyArray(temp->word, myChoice);
-        }
-        else{
-            copyArray(result, myChoice);
         }
 
         printf("My Choice: %s\n", myChoice);
@@ -605,22 +600,19 @@ int Rehle(struct Graph* Graph, bool myTurn){
         }
 
          myChoice[0] = '\0';
-        IAmThinking(Graph,oppChoice,true,myChoice);
+        IAmThinking(Graph,createWord(oppChoice),true,myChoice);
 
         if(myChoice[0] == '\0'){
-            int maxBracnhSize = -1;
+            int maxBranchSize = -1;
             struct Word* current = Graph->adjList[i]->nextWord;
             struct Word* temp = NULL;
             while(current != NULL){
-                if(current->branchLength >= maxBracnhSize){
-                    maxBracnhSize = current->branchLength;
+                if(current->branchLength >= maxBranchSize){
+                    maxBranchSize = current->branchLength;
                     temp = current;
                 }
             }
             copyArray(temp->word, myChoice);
-        }
-        else{
-            copyArray(result, myChoice);
         }
 
 
@@ -692,19 +684,16 @@ int Rehle(struct Graph* Graph, bool myTurn){
             IAmThinking(Graph,oppChoice,false,myChoice);
 
             if(myChoice[0] == '\0'){
-                int maxBracnhSize = -1;
+                int maxBranchSize = -1;
                 struct Word* current = Graph->adjList[i]->nextWord;
                 struct Word* temp = NULL;
                 while(current != NULL){
-                    if(current->branchLength >= maxBracnhSize){
-                        maxBracnhSize = current->branchLength;
+                    if(current->branchLength >= maxBranchSize){
+                        maxBranchSize = current->branchLength;
                         temp = current;
                     }
                 }
                 copyArray(temp->word, myChoice);
-            }
-            else{
-                copyArray(result, myChoice);
             }
 
 
