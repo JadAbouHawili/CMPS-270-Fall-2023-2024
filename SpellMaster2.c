@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-
+#include <time.h>
 char** ArrayOfSpells;
 int numberOfSpells;
 int const sizeOfSpells = 150;
@@ -295,7 +295,7 @@ int Kazdoora(struct Graph* Graph, bool myTurn){
             ++i;
         }
         myChoice[i] = '\0';
-        printf("My Choice: %s", myChoice);
+        printf("My Choice: %s\n", myChoice);
         updateGraph(Graph, myChoice);
     }
     while(true){
@@ -364,6 +364,13 @@ int main(){
     readSpells();
     struct Graph* Graph = buildGraph();
     printGraph(Graph);
-    Kazdoora(Graph, false);
+
+    //randomize who starts first
+    srand(time(NULL));
+    bool myturn;
+    if(rand() % 2 ==0) myturn=false;
+    else myturn=true;
+
+    Kazdoora(Graph, myturn);
     freeGraph(Graph);
 }
