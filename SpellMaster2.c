@@ -7,6 +7,7 @@
 char** ArrayOfSpells;
 int numberOfSpells;
 int const sizeOfSpells = 150;
+#define MAX_SIZE 1000
 
 struct Word{
     char * word;
