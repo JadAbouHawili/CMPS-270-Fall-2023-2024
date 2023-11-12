@@ -363,7 +363,7 @@ char* IAmThinking(struct Graph* Graph, struct Word* Word, bool win){
         while(possGetter != NULL){
             pushString(&possibilities, possGetter->word);
             possGetter->used = true;
-            *win = !(*win);
+            win = !(win);
             possGetter = hasNextPossibility(Graph, possGetter);
         }
         if(win){
@@ -540,7 +540,7 @@ int Rehle(struct Graph* Graph, bool myTurn){
         struct Word* temp1 = NULL;
 
         // If there is no where to go we lose
-        if(current->bracnhLength == 0){
+        if(current->branchLength == 0){
             printf("Congrats you win \n");
             return 0;
         }
@@ -567,8 +567,8 @@ int Rehle(struct Graph* Graph, bool myTurn){
             struct Word* current = Graph->adjList[i]->nextWord;
             struct Word* temp = NULL;
             while(current != NULL){
-                if(current->bracnhLength >= maxBracnhSize){
-                    maxBracnhSize = current->bracnhLength;
+                if(current->branchLength >= maxBracnhSize){
+                    maxBracnhSize = current->branchLength;
                     temp = current;
                 }
             }
@@ -582,7 +582,7 @@ int Rehle(struct Graph* Graph, bool myTurn){
 
 
         for(i=0; i<numberOfSpells; ++i){
-            if(condition(myChoice, ArrayOfSpells[i]) && Graph->adjList[i]->bracnhLength != 0){
+            if(condition(myChoice, ArrayOfSpells[i]) && Graph->adjList[i]->branchLength != 0){
                 win = false;
                 break;
             }
@@ -599,7 +599,7 @@ int Rehle(struct Graph* Graph, bool myTurn){
         int j;
         int maxBranchSize = -__INT_MAX__;
         for(i=0; i<numberOfSpells; ++i){
-            int current = Graph->adjList[i]->bracnhLength;
+            int current = Graph->adjList[i]->branchLength;
             if(current >= maxBranchSize){
                 maxBranchSize = current;
                 j=i;
@@ -613,8 +613,8 @@ int Rehle(struct Graph* Graph, bool myTurn){
             struct Word* current = Graph->adjList[i]->nextWord;
             struct Word* temp = NULL;
             while(current != NULL){
-                if(current->bracnhLength >= maxBracnhSize){
-                    maxBracnhSize = current->bracnhLength;
+                if(current->branchLength >= maxBracnhSize){
+                    maxBracnhSize = current->branchLength;
                     temp = current;
                 }
             }
@@ -629,7 +629,7 @@ int Rehle(struct Graph* Graph, bool myTurn){
         printf("My choice: %s", myChoice);
         
         for(i=0; i<numberOfSpells; ++i){
-            if(condition(myChoice, ArrayOfSpells[i]) && Graph->adjList[i]->bracnhLength != 0){
+            if(condition(myChoice, ArrayOfSpells[i]) && Graph->adjList[i]->branchLength != 0){
                 win = false;
                 break;
             }
@@ -661,7 +661,7 @@ int Rehle(struct Graph* Graph, bool myTurn){
                 printf("Oops I win \n");
                 return 1;
             }
-            if(current->bracnhLength == 0){
+            if(current->branchLength == 0){
                 printf("Congrats you win \n");
                 return 0;
             }
@@ -670,7 +670,7 @@ int Rehle(struct Graph* Graph, bool myTurn){
             struct Word* temp1 = NULL;
 
             // If there is no where to go we lose
-            if(current->bracnhLength == 0){
+            if(current->branchLength == 0){
                 printf("Congrats you win \n");
                 return 0;
             }
@@ -690,16 +690,15 @@ int Rehle(struct Graph* Graph, bool myTurn){
                 }
             }
 
-            char* result = IAmThinking(Graph,oppChoice,false);
-            char* result = IAmThinking(Graph,oppChoice,false);
+            char* result = IAmThinking(Graph,createWord(oppChoice),false);
 
             if(result == NULL){
                 int maxBracnhSize = -1;
                 struct Word* current = Graph->adjList[i]->nextWord;
                 struct Word* temp = NULL;
                 while(current != NULL){
-                    if(current->bracnhLength >= maxBracnhSize){
-                        maxBracnhSize = current->bracnhLength;
+                    if(current->branchLength >= maxBracnhSize){
+                        maxBracnhSize = current->branchLength;
                         temp = current;
                     }
                 }
@@ -713,7 +712,7 @@ int Rehle(struct Graph* Graph, bool myTurn){
             printf("My choice: %s", myChoice);
 
             for(i=0; i<numberOfSpells; ++i){
-                if(condition(myChoice, ArrayOfSpells[i]) && Graph->adjList[i]->bracnhLength != 0){
+                if(condition(myChoice, ArrayOfSpells[i]) && Graph->adjList[i]->branchLength != 0){
                     win = false;
                     break;
                 }
