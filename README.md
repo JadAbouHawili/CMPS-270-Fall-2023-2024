@@ -1,1 +1,2 @@
-ggg# CMPS-270-Fall-2023-2024
+Bot:
+easy medium hard
