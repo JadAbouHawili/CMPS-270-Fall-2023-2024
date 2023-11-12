@@ -317,7 +317,7 @@ int Kazdoora(struct Graph* Graph, bool myTurn, int lastCharCount[], int firstCha
             scanf("%s", oppChoice);
             i = isInAdjList(Graph, oppChoice);
             if(i == -1){
-                printf("Your choice is not int he list. \n");
+                printf("Your choice is not in the list. \n");
                 printf("I win :)");
                 return 1;
             }
@@ -379,5 +379,9 @@ int main(){
     readSpells();
     struct Graph* Graph = buildGraph();
     printGraph(Graph);
+    int firstCharCount[26];
+    int lastCharCount[26];
+    getCounterArrays(firstCharCount,lastCharCount);
+    int x = Kazdoora(Graph, false, lastCharCount, firstCharCount);
     freeGraph(Graph);
 }
