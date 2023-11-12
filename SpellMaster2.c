@@ -302,6 +302,7 @@ char* IAmThinking(struct Graph* Graph, struct Word* Word, bool* win){
         setFlagsToFalse(Graph);
         current = current->nextWord;
     }
+    return NULL;
 }
 // Easy Mode
 int Kazdoora(struct Graph* Graph, bool myTurn){
