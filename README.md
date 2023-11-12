@@ -1,2 +1,1 @@
-Bot:
-easy medium hard
+
