@@ -226,6 +226,7 @@ int getBranchLength(struct Graph* Graph, char Spell[]){
             return Graph->adjList[i]->bracnhLength;
         }
     }
+    return -1;
 }
 void copyArray(char Spell1[], char Spell2[]){
     int j = 0;
