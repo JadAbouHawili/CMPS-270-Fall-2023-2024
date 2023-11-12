@@ -981,7 +981,7 @@ void IAmThinking(struct Graph* Graph, char oppChoice[], char myChoice[], bool wi
     struct Word* current = Graph->adjList[i];
     updateGraph(Graph, current->word);
     int j;
-    for(j=0; j<current->bracnhLength; ++j){
+    for(j=0; j<current->branchLength; ++j){
         struct Word* possGetter = hasNextPossibility(Graph, current);
         push(&possibilites, possGetter->word);
         win = !win;
