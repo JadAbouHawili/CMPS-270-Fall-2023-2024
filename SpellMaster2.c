@@ -169,10 +169,17 @@ void printGraph(struct Graph* Graph){
     for(i=0; i<Graph->numWords; ++i){
         struct Word* current= Graph->adjList[i];
         while(current != NULL){
-            printf("[%s]-> ", current->word);
-            current = current->nextWord;
+            if(current->used){
+                printf("[%s](used)-> ", current->word);
+                current = current->nextWord;
+            }
+            
+            else{
+                printf("[%s](unused)-> ", current->word);
+                current = current->nextWord;
+            }
         }
-        printf("\n");
+        printf("\n\n");
     }
 }
 void freeGraph(struct Graph* Graph){
