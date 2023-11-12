@@ -9,6 +9,78 @@ int numberOfSpells;
 int const sizeOfSpells = 150;
 #define MAX_SIZE 1000
 
+struct StringStack {
+    char items[MAX_SIZE][150];
+    int top;
+};
+
+// Initialize the stack
+void initializeStringStack(struct StringStack* stack) {
+    stack->top = -1;
+}
+
+// Check if the stack is full
+int isStringStackFull(struct StringStack* stack) {
+    return stack->top == MAX_SIZE - 1;
+}
+
+// Check if the stack is empty
+int isStringStackEmpty(struct StringStack* stack) {
+    return stack->top == -1;
+}
+
+// Push a string onto the stack
+void pushString(struct StringStack* stack, char* value) {
+    if (isStringStackFull(stack)) {
+        printf("String Stack is full, cannot push element.\n");
+    } else {
+        stack->top++;
+        strcpy(stack->items[stack->top], value);
+    }
+}
+
+void pop(struct StringStack* stack, char* result) {
+    if (isStringStackEmpty(stack)) {
+        printf("Stack underflow\n");
+        return;
+    }
+    strcpy(result, stack->items[stack->top]);
+    free(stack->items[stack->top]);
+    stack->top--;
+}
+
+
+// Pop a string from the stack
+char* popString(struct StringStack* stack) {
+    if (isStringStackEmpty(stack)) {
+        printf("String Stack is empty, cannot pop element.\n");
+        return NULL;
+    } else {
+        return stack->items[stack->top--];
+    }
+}
+
+// Get the top string of the stack without removing it
+char* peekString(struct StringStack* stack) {
+    if (isStringStackEmpty(stack)) {
+        printf("String Stack is empty.\n");
+        return NULL;
+    } else {
+        return stack->items[stack->top];
+    }
+}
+
+// Function to print the elements in the string stack
+void printStringStack(struct StringStack* stack) {
+    if (isStringStackEmpty(stack)) {
+        printf("String Stack is empty.\n");
+    } else {
+        printf("String Stack elements: \n");
+        for (int i = stack->top; i >= 0; i--) {
+            printf("%s\n", stack->items[i]);
+        }
+    }
+}
 struct Word{
     char * word;
     struct Word * nextWord;
@@ -261,7 +333,7 @@ void setFlagsToFalse(struct Graph* Graph){
 }
 struct Word* hasNextPossibility(struct Graph* Graph, struct Word* Word){
     struct Word* current = Graph->adjList[(isInAdjList(Graph, Word->word))];
-    if(current->bracnhLength == 0) {
+    if(current->branchLength == 0) {
         return NULL;
     }
     else {
@@ -277,8 +349,8 @@ struct Word* hasNextPossibility(struct Graph* Graph, struct Word* Word){
 }
 
 char* IAmThinking(struct Graph* Graph, struct Word* Word, bool* win){
-    StringStack possibilities;
-    initialize(&possibilities);
+    struct StringStack possibilities;
+    initializeStringStack(&possibilities);
 
     struct Word* current = Graph->adjList[isInAdjList(Graph, Word->word)];
     current->used = true;
@@ -287,14 +359,14 @@ char* IAmThinking(struct Graph* Graph, struct Word* Word, bool* win){
         possGetter = hasNextPossibility(Graph,current);
         possGetter->used = true;
         while(possGetter != NULL){
-            push(&possibilities, possGetter->word);
+            pushString(&possibilities, possGetter->word);
             possGetter->used = true;
             *win = !(*win);
             possGetter = hasNextPossibility(Graph, possGetter);
         }
         if(win){
             char myChoice[150];
-            while(!isEmpty(&possibilities)){
+            while(!isStringStackEmpty(&possibilities)){
                 pop(&possibilities, myChoice);
             }
             return myChoice;
@@ -645,67 +717,6 @@ int Rehle(struct Graph* Graph, bool myTurn){
             updateGraph(Graph, myChoice);
             updateGraph(Graph, oppChoice);
         }   
-}
-struct StringStack {
-    char items[MAX_SIZE][150];
-    int top;
-};
-
-// Initialize the stack
-void initializeStringStack(struct StringStack* stack) {
-    stack->top = -1;
-}
-
-// Check if the stack is full
-int isStringStackFull(struct StringStack* stack) {
-    return stack->top == MAX_SIZE - 1;
-}
-
-// Check if the stack is empty
-int isStringStackEmpty(struct StringStack* stack) {
-    return stack->top == -1;
-}
-
-// Push a string onto the stack
-void pushString(struct StringStack* stack, char* value) {
-    if (isStringStackFull(stack)) {
-        printf("String Stack is full, cannot push element.\n");
-    } else {
-        stack->top++;
-        strcpy(stack->items[stack->top], value);
-    }
-}
-
-// Pop a string from the stack
-char* popString(struct StringStack* stack) {
-    if (isStringStackEmpty(stack)) {
-        printf("String Stack is empty, cannot pop element.\n");
-        return NULL;
-    } else {
-        return stack->items[stack->top--];
-    }
-}
-
-// Get the top string of the stack without removing it
-char* peekString(struct StringStack* stack) {
-    if (isStringStackEmpty(stack)) {
-        printf("String Stack is empty.\n");
-        return NULL;
-    } else {
-        return stack->items[stack->top];
-    }
-}
-
-// Function to print the elements in the string stack
-void printStringStack(struct StringStack* stack) {
-    if (isStringStackEmpty(stack)) {
-        printf("String Stack is empty.\n");
-    } else {
-        printf("String Stack elements: \n");
-        for (int i = stack->top; i >= 0; i--) {
-            printf("%s\n", stack->items[i]);
-        }
-    }
 }
 
 // Example usage
