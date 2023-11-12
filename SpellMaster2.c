@@ -159,10 +159,16 @@ void printGraph(struct Graph* Graph){
     for(i=0; i<numberOfSpells; ++i){
         struct Word* current= Graph->adjList[i];
         while(current != NULL){
-            printf("[%s][%d]-> ", current->word, current->branchLength);
-            current = current->nextWord;
+            if(current->used){
+                printf("[%s][%d](used)-> ", current->word, current->branchLength);
+                current = current->nextWord;
+            }
+            else{
+                printf("[%s][%d](unused)-> ", current->word, current->branchLength);
+                current = current->nextWord;
+            }
         }
-        printf("\n");
+        printf("\n\n");
     }
 }
 void freeGraph(struct Graph* Graph){
