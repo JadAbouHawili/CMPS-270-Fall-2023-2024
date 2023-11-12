@@ -365,6 +365,17 @@ int Kazdoora(struct Graph* Graph, bool myTurn, int lastCharCount[], int firstCha
             updateGraph(Graph, oppChoice);
         }   
 }
+void getCounterArrays(int lastCharcount[], int firstCharCount[]){
+    int i;
+    for(i=0; i<26; ++i){
+        lastCharcount[i] = 0;
+        firstCharCount[i] = 0;
+    }
+    for(i=0; i<numberOfSpells; ++i){
+        lastCharcount[lastCharOf(ArrayOfSpells[i]) - 'a']++;
+        firstCharCount[ArrayOfSpells[i][0] -'a']++;
+    }
+}
 int main(){
     readSpells();
     struct Graph* Graph = buildGraph();
