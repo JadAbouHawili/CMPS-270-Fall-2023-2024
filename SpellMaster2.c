@@ -39,7 +39,7 @@ struct Word* createWord(char word[]){
 
     return newWord;
 }
-void readSpells(){
+int readSpells(){
     int i;
 
 
@@ -51,7 +51,7 @@ void readSpells(){
     if(fpointer == NULL){
         printf("Could Not Open File! \n");
         numberOfSpells = 0;
-        return;
+        return -1;
     }
 
 
@@ -61,7 +61,7 @@ void readSpells(){
         printf("Please make sure the file starts with an integer to denote the number of Spells.\n");
         numberOfSpells = 0;
         fclose(fpointer);
-        return;
+        return -1;
     }
 
 
@@ -73,6 +73,7 @@ void readSpells(){
     }
 
     fclose(fpointer);
+    return 1;
 }
 struct Graph * createGraph(int numWords){
     struct Graph * Graph = (struct Graph* ) malloc(sizeof(struct Graph));
@@ -361,16 +362,17 @@ int Kazdoora(struct Graph* Graph, bool myTurn){
         }   
 }
 int main(){
-    readSpells();
-    struct Graph* Graph = buildGraph();
-    printGraph(Graph);
+    if(readSpells()!=-1){
+        struct Graph* Graph = buildGraph();
+        printGraph(Graph);
 
-    //randomize who starts first
-    srand(time(NULL));
-    bool myturn;
-    if(rand() % 2 ==0) myturn=false;
-    else myturn=true;
+        //randomize who starts first
+        srand(time(NULL));
+        bool myturn;
+        if(rand() % 2 ==0) myturn=false;
+        else myturn=true;
 
-    Kazdoora(Graph, myturn);
-    freeGraph(Graph);
+        Kazdoora(Graph, myturn);
+        freeGraph(Graph);
+    }
 }
