@@ -249,7 +249,60 @@ void copyArray(char Spell1[], char Spell2[]){
     }
     Spell2[j] = '\0';
 }
+void setFlagsToFalse(struct Graph* Graph){
+    int i;
+    for(i=0; i<numberOfSpells; ++i){
+        struct Word* current = Graph->adjList[i];
+        while(current != NULL){
+            current->used = false;
+            current = current->nextWord;
+        }
+    }
+}
+struct Word* hasNextPossibility(struct Graph* Graph, struct Word* Word){
+    struct Word* current = Graph->adjList[(isInAdjList(Graph, Word->word))];
+    if(current->bracnhLength == 0) {
+        return NULL;
+    }
+    else {
+        current = current->nextWord;
+        while(current != NULL){
+            if(!current->used){
+                return current;
+            }
+            current = current->nextWord;
+        }
+        return NULL;
+    }
+}
 
+char* IAmThinking(struct Graph* Graph, struct Word* Word, bool* win){
+    StringStack possibilities;
+    initialize(&possibilities);
+
+    struct Word* current = Graph->adjList[isInAdjList(Graph, Word->word)];
+    current->used = true;
+    struct Word* possGetter = NULL;
+    while(current != NULL){
+        possGetter = hasNextPossibility(Graph,current);
+        possGetter->used = true;
+        while(possGetter != NULL){
+            push(&possibilities, possGetter->word);
+            possGetter->used = true;
+            *win = !(*win);
+            possGetter = hasNextPossibility(Graph, possGetter);
+        }
+        if(win){
+            char myChoice[150];
+            while(!isEmpty(&possibilities)){
+                pop(&possibilities, myChoice);
+            }
+            return myChoice;
+        }
+        setFlagsToFalse(Graph);
+        current = current->nextWord;
+    }
+}
 // Easy Mode
 int Kazdoora(struct Graph* Graph, bool myTurn){
 
