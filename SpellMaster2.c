@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <time.h>
+#include <string.h>
 
 char** ArrayOfSpells;
 int numberOfSpells;
@@ -75,6 +76,52 @@ int readSpells(){
 
     fclose(fpointer);
     return 1;
+}
+
+// Define a stack structure for strings (char pointers)
+typedef struct {
+    char* data[MAX_SIZE];
+    int top;
+} StringStack;
+
+// Function to initialize the string stack
+void initialize(StringStack* stack) {
+    stack->top = -1;
+}
+
+// Function to check if the string stack is empty
+bool isEmpty(StringStack* stack) {
+    return stack->top == -1;
+}
+
+// Function to check if the string stack is full
+bool isFull(StringStack* stack) {
+    return stack->top == MAX_SIZE - 1;
+}
+
+// Function to push a string onto the string stack
+void push(StringStack* stack, const char* str) {
+    if (isFull(stack)) {
+        printf("Stack overflow\n");
+        return;
+    }
+    stack->top++;
+    stack->data[stack->top] = strdup(str); // Duplicate the string
+    if (stack->data[stack->top] == NULL) {
+        printf("Memory allocation error\n");
+        exit(EXIT_FAILURE);
+    }
+}
+
+// Function to pop a string from the string stack
+void pop(StringStack* stack, char* result) {
+    if (isEmpty(stack)) {
+        printf("Stack underflow\n");
+        return;
+    }
+    strcpy(result, stack->data[stack->top]);
+    free(stack->data[stack->top]);
+    stack->top--;
 }
 struct Graph * createGraph(int numWords){
     struct Graph * Graph = (struct Graph* ) malloc(sizeof(struct Graph));
