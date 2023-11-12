@@ -9,11 +9,13 @@ int numberOfSpells;
 int const sizeOfSpells = 150;
 #define MAX_SIZE 1000
 
+/*
 struct StringStack {
     char items[MAX_SIZE][150];
     int top;
 };
 
+*/
 // Initialize the stack
 /*
  * @param: StringStack*
@@ -22,9 +24,11 @@ struct StringStack {
  * effects: initializes it, making the StringStack detectable as empty
  *
  */
+/*
 void initializeStringStack(struct StringStack* stack) {
     stack->top = -1;
 }
+*/
 
 /*
  *@param: StringStack*
@@ -33,9 +37,11 @@ void initializeStringStack(struct StringStack* stack) {
  * effects: check if its full or not(based on top)
  */
 // Check if the stack is full
+/*
 int isStringStackFull(struct StringStack* stack) {
     return stack->top == MAX_SIZE - 1;
 }
+*/
 
 /*
  * @param: StringStack*
@@ -44,9 +50,11 @@ int isStringStackFull(struct StringStack* stack) {
  * effects: checks if its empty(based on top)
  */
 // Check if the stack is empty
+/*
 int isStringStackEmpty(struct StringStack* stack) {
     return stack->top == -1;
 }
+*/
 
 /*
  * @param: StringStack*, char* (in that order)
@@ -55,6 +63,7 @@ int isStringStackEmpty(struct StringStack* stack) {
  * effects: push a string, now the top of the stack is that string
  */
 // Push a string onto the stack
+/*
 void pushString(struct StringStack* stack, char* value) {
     if (isStringStackFull(stack)) {
         printf("String Stack is full, cannot push element.\n");
@@ -63,6 +72,7 @@ void pushString(struct StringStack* stack, char* value) {
         strcpy(stack->items[stack->top], value);
     }
 }
+*/
 
 /*
  * @param: StringStack*, char*
@@ -70,6 +80,7 @@ void pushString(struct StringStack* stack, char* value) {
  * required: corrected order of parameters, initalized StringStack*
  * effects: pop a string and put it in the passed char pointer, now the top of the stack is what was under the popped element
  */
+/*
 void pop(struct StringStack* stack, char* result) {
     if (isStringStackEmpty(stack)) {
         printf("Stack underflow\n");
@@ -79,7 +90,7 @@ void pop(struct StringStack* stack, char* result) {
     free(stack->items[stack->top]);
     stack->top--;
 }
-
+*/
 /*
  * @param: StringStack*
  * @return: char*
@@ -87,6 +98,7 @@ void pop(struct StringStack* stack, char* result) {
  * effects: pop a string and return it, now the top of the stack is what was under the popped element 
  */
 // Pop a string from the stack
+/*
 char* popString(struct StringStack* stack) {
     if (isStringStackEmpty(stack)) {
         printf("String Stack is empty, cannot pop element.\n");
@@ -95,6 +107,7 @@ char* popString(struct StringStack* stack) {
         return stack->items[stack->top--];
     }
 }
+*/
 
 /*
  * @param: StringStack*
@@ -103,6 +116,7 @@ char* popString(struct StringStack* stack) {
  * effects: return the top of the stack
  */
 // Get the top string of the stack without removing it
+/*
 char* peekString(struct StringStack* stack) {
     if (isStringStackEmpty(stack)) {
         printf("String Stack is empty.\n");
@@ -111,6 +125,7 @@ char* peekString(struct StringStack* stack) {
         return stack->items[stack->top];
     }
 }
+*/
 
 /*
  * @param: StringStack*
@@ -119,6 +134,7 @@ char* peekString(struct StringStack* stack) {
  * effects: print the content of the stack from top to bottom
  */
 // Function to print the elements in the string stack
+/*
 void printStringStack(struct StringStack* stack) {
     if (isStringStackEmpty(stack)) {
         printf("String Stack is empty.\n");
@@ -129,6 +145,7 @@ void printStringStack(struct StringStack* stack) {
         }
     }
 }
+*/
 struct Word{
     char * word;
     struct Word * nextWord;
@@ -464,6 +481,7 @@ void copyArray(char Spell1[], char Spell2[]){
  * requires: populated graph
  * effects: sets all used flags for nodes in the graph to false
  */
+/*
 void setFlagsToFalse(struct Graph* Graph){
     int i;
     for(i=0; i<numberOfSpells; ++i){
@@ -474,12 +492,15 @@ void setFlagsToFalse(struct Graph* Graph){
         }
     }
 }
+*/
 /* @param: Graph*, Word*
  * @return: Word*
  * requires: populated graph, non-null Word*
  * effects: returns whether there is a possibility in the graph after our current position, i.e if we can keep playing. if not return null
  *
  */
+
+/*
 struct Word* hasNextPossibility(struct Graph* Graph, struct Word* Word){
     struct Word* current = Graph->adjList[(isInAdjList(Graph, Word->word))];
     if(current->branchLength == 0) {
@@ -496,6 +517,7 @@ struct Word* hasNextPossibility(struct Graph* Graph, struct Word* Word){
         return NULL;
     }
 }
+*/
 /* @param: Graph*, Word*, bool, char[]
  * @return: void
  * requires: populated graph, nonempty word, nonempty char[]
@@ -503,6 +525,7 @@ struct Word* hasNextPossibility(struct Graph* Graph, struct Word* Word){
  *
  */
 
+/*
 void IAmThinking(struct Graph* Graph, struct Word* Word, bool win, char myChoice[]){
     struct StringStack possibilities;
     initializeStringStack(&possibilities);
@@ -534,6 +557,7 @@ void IAmThinking(struct Graph* Graph, struct Word* Word, bool win, char myChoice
         current = current->nextWord;
     }
 }
+*/
 /* @param: Graph*, bool
  * @return: int
  * reqires: populated graph
@@ -608,7 +632,7 @@ int Kazdoora(struct Graph* Graph, bool myTurn){
             ++i;
         }
         myChoice[i] = '\0';
-        printf("My Choice: %s", myChoice);
+        printf("My Choice: %s\n", myChoice);
         updateGraph(Graph, myChoice);
     }
     while(true){
@@ -674,6 +698,109 @@ int Kazdoora(struct Graph* Graph, bool myTurn){
         }   
 }
 
+/*
+// Example usage
+int main() {
+    struct StringStack stringStack;
+    initializeStringStack(&stringStack);
+
+    pushString(&stringStack, "Hello");
+    pushString(&stringStack, "Stack");
+    pushString(&stringStack, "Implementation");
+
+    printStringStack(&stringStack); // Print the stack elements
+
+    printf("Popped element: %s\n", popString(&stringStack));
+    printf("Top element after popping: %s\n", peekString(&stringStack));
+
+    return 0;
+}
+*/
+
+
+   /* 
+#define MAX_SIZE 1000
+#define MAX_STRING_SIZE 150
+
+// Define a stack structure for string arrays
+typedef struct {
+    char data[MAX_SIZE][MAX_STRING_SIZE];
+    int top;
+} StringArrayStack;
+
+// Function to initialize the string array stack
+void initialize(StringArrayStack* stack) {
+    stack->top = -1;
+}
+
+// Function to check if the string array stack is empty
+bool isEmpty(StringArrayStack* stack) {
+    return stack->top == -1;
+}
+
+// Function to check if the string array stack is full
+bool isFull(StringArrayStack* stack) {
+    return stack->top == MAX_SIZE - 1;
+}
+
+// Function to push a string array onto the stack
+void push(StringArrayStack* stack, const char str[]) {
+    if (isFull(stack)) {
+        printf("Stack overflow\n");
+        return;
+    }
+
+    stack->top++;
+    strncpy(stack->data[stack->top], str, MAX_STRING_SIZE - 1);
+    stack->data[stack->top][MAX_STRING_SIZE - 1] = '\0'; // Ensure null-termination
+}
+
+void pop(StringArrayStack* stack, char result[]) {
+    if (isEmpty(stack)) {
+        printf("Stack underflow\n");
+        return;
+    }
+
+    strncpy(result, stack->data[stack->top], MAX_STRING_SIZE);
+    stack->top--;
+}
+
+*/
+
+/*
+
+
+void IAmThinking(struct Graph* Graph, char oppChoice[], char myChoice[], bool win){
+    StringArrayStack possibilites;
+    initialize(&possibilites);
+    bool initialState = win;
+    int i = isInAdjList(Graph,oppChoice);
+    struct Word* current = Graph->adjList[i];
+    updateGraph(Graph, current->word);
+    int j;
+    for(j=0; j<current->branchLength; ++j){
+        struct Word* possGetter = hasNextPossibility(Graph, current);
+        push(&possibilites, possGetter->word);
+        win = !win;
+        updateGraph(Graph, possGetter->word);
+        while(possGetter != NULL){
+            push(&possibilites, possGetter->word);
+            printf("%s", possGetter->word);
+            win = !win;
+            possGetter = hasNextPossibility(Graph, possGetter->nextWord);
+        }
+        if(win){
+            while(!isEmpty(&possibilites)){
+                pop(&possibilites, myChoice);
+                break;
+            }
+        }
+        setFlagsToFalse(Graph);
+        win = initialState;
+        current = current->nextWord;
+    }
+}
+*/
 // Medium Mode
 /* @param: Graph*, bool
  * @return: int
@@ -681,6 +808,7 @@ int Kazdoora(struct Graph* Graph, bool myTurn){
  * effect: 
  *
  */
+/*
 int Rehle(struct Graph* Graph, bool myTurn){
     char oppChoice[150];
     char myChoice[150];
@@ -722,7 +850,8 @@ int Rehle(struct Graph* Graph, bool myTurn){
             }
         }
         myChoice[0] = '\0';
-        IAmThinking(myCopy,createWord(oppChoice),false,myChoice);
+        //struct Graph* Graph, char oppChoice[], char myChoice[], bool win
+        IAmThinking(myCopy,createWord(oppChoice),myChoice,false);
 
         if(myChoice[0] == '\0'){
             int maxBranchSize = -1;
@@ -765,8 +894,9 @@ int Rehle(struct Graph* Graph, bool myTurn){
             }
         }
 
-         myChoice[0] = '\0';
-        IAmThinking(Graph,createWord(oppChoice),true,myChoice);
+        myChoice[0] = '\0';
+        //struct Graph* Graph, char oppChoice[], char myChoice[], bool win
+        IAmThinking(myCopy,createWord(oppChoice),myChoice,true);
 
         if(myChoice[0] == '\0'){
             int maxBranchSize = -1;
@@ -847,7 +977,8 @@ int Rehle(struct Graph* Graph, bool myTurn){
                 }
             }
              myChoice[0] = '\0';
-            IAmThinking(Graph,oppChoice,false,myChoice);
+             //struct Graph* Graph, char oppChoice[], char myChoice[], bool win
+            IAmThinking(myCopy,oppChoice,myChoice,false);
 
             if(myChoice[0] == '\0'){
                 int maxBranchSize = -1;
@@ -882,23 +1013,6 @@ int Rehle(struct Graph* Graph, bool myTurn){
         }   
 }
 
-/*
-// Example usage
-int main() {
-    struct StringStack stringStack;
-    initializeStringStack(&stringStack);
-
-    pushString(&stringStack, "Hello");
-    pushString(&stringStack, "Stack");
-    pushString(&stringStack, "Implementation");
-
-    printStringStack(&stringStack); // Print the stack elements
-
-    printf("Popped element: %s\n", popString(&stringStack));
-    printf("Top element after popping: %s\n", peekString(&stringStack));
-
-    return 0;
-}
 */
 
 int main(){
@@ -906,100 +1020,19 @@ int main(){
         struct Graph* Graph = buildGraph();
         printGraph(Graph);
 
-        /*
+        
             //randomize who starts first
         srand(time(NULL));
         bool myturn;
         if(rand() % 2 ==0) myturn=false;
         else myturn=true;
-        */
+        
 
 
-        Rehle(Graph, true);
+        Kazdoora(Graph, myturn);
         freeGraph(Graph);
 
     }
     
 }
-    
-#define MAX_SIZE 1000
-#define MAX_STRING_SIZE 150
 
-// Define a stack structure for string arrays
-typedef struct {
-    char data[MAX_SIZE][MAX_STRING_SIZE];
-    int top;
-} StringArrayStack;
-
-// Function to initialize the string array stack
-void initialize(StringArrayStack* stack) {
-    stack->top = -1;
-}
-
-// Function to check if the string array stack is empty
-bool isEmpty(StringArrayStack* stack) {
-    return stack->top == -1;
-}
-
-// Function to check if the string array stack is full
-bool isFull(StringArrayStack* stack) {
-    return stack->top == MAX_SIZE - 1;
-}
-
-// Function to push a string array onto the stack
-void push(StringArrayStack* stack, const char str[]) {
-    if (isFull(stack)) {
-        printf("Stack overflow\n");
-        return;
-    }
-
-    stack->top++;
-    strncpy(stack->data[stack->top], str, MAX_STRING_SIZE - 1);
-    stack->data[stack->top][MAX_STRING_SIZE - 1] = '\0'; // Ensure null-termination
-}
-
-void pop(StringArrayStack* stack, char result[]) {
-    if (isEmpty(stack)) {
-        printf("Stack underflow\n");
-        return;
-    }
-
-    strncpy(result, stack->data[stack->top], MAX_STRING_SIZE);
-    stack->top--;
-}
-
-
-
-
-
-
-void IAmThinking(struct Graph* Graph, char oppChoice[], char myChoice[], bool win){
-    StringArrayStack possibilites;
-    initialize(&possibilites);
-    bool initialState = win;
-    int i = isInAdjList(Graph,oppChoice);
-    struct Word* current = Graph->adjList[i];
-    updateGraph(Graph, current->word);
-    int j;
-    for(j=0; j<current->branchLength; ++j){
-        struct Word* possGetter = hasNextPossibility(Graph, current);
-        push(&possibilites, possGetter->word);
-        win = !win;
-        updateGraph(Graph, possGetter->word);
-        while(possGetter != NULL){
-            push(&possibilites, possGetter->word);
-            printf("%s", possGetter->word);
-            win = !win;
-            possGetter = hasNextPossibility(Graph, possGetter->nextWord);
-        }
-        if(win){
-            while(!isEmpty(&possibilites)){
-                pop(&possibilites, myChoice);
-                break;
-            }
-        }
-        setFlagsToFalse(Graph);
-        win = initialState;
-        current = current->nextWord;
-    }
-}
