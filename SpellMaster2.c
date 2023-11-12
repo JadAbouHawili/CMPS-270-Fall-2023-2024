@@ -519,8 +519,7 @@ int Rehle(struct Graph* Graph, bool myTurn){
     char myChoice[150];
     int i;
     bool win;
-    int smallestBranch = __INT_MAX__;
-    int currentBranchSize;
+    struct Graph* myCopy = buildGraph();
     if(!myTurn){
         printf("Enter your choice: ");
         scanf("%s", oppChoice);
@@ -538,7 +537,7 @@ int Rehle(struct Graph* Graph, bool myTurn){
         struct Word* temp1 = NULL;
 
         // If there is no where to go we lose
-        if(current->branchLength == 0){
+        if(current->bracnhLength == 0){
             printf("Congrats you win \n");
             return 0;
         }
@@ -557,34 +556,30 @@ int Rehle(struct Graph* Graph, bool myTurn){
                 return 0;
             }
         }
-        current = Graph->adjList[i];
-        struct Word* temp2 = NULL;
-        current = current->nextWord;
-        while(current != NULL){
-            if(!current->used){
-                currentBranchSize = getBranchLength(Graph, current->word);
-                if(currentBranchSize != 0 && currentBranchSize < smallestBranch && currentBranchSize % 2 == 0){
-                    smallestBranch = currentBranchSize;
-                    temp2 = current;
-                }
-                current = current->nextWord;
-            }
 
-        }
-        if(temp2 != NULL){
-            copyArray(temp2->word, myChoice);
-            temp2 = NULL;
+        char* result = IAmThinking(Graph,oppChoice,false);
+
+        if(result == NULL){
+            int maxBracnhSize = -1;
+            struct Word* current = Graph->adjList[i]->nextWord;
+            struct Word* temp = NULL;
+            while(current != NULL){
+                if(current->bracnhLength >= maxBracnhSize){
+                    maxBracnhSize = current->bracnhLength;
+                    temp = current;
+                }
+            }
+            copyArray(temp->word, myChoice);
         }
         else{
-            copyArray(temp1->word, myChoice);
-            temp1 = NULL;
+            copyArray(result, myChoice);
         }
 
         printf("My Choice: %s\n", myChoice);
 
 
         for(i=0; i<numberOfSpells; ++i){
-            if(condition(myChoice, ArrayOfSpells[i]) && Graph->adjList[i]->branchLength != 0){
+            if(condition(myChoice, ArrayOfSpells[i]) && Graph->adjList[i]->bracnhLength != 0){
                 win = false;
                 break;
             }
@@ -598,27 +593,40 @@ int Rehle(struct Graph* Graph, bool myTurn){
         updateGraph(Graph, oppChoice);
     }
     else{
-        struct Word* current = Graph->adjList[0];
-        struct Word* temp = NULL;   
-        current = current->nextWord;
-        while(current != NULL){
-            currentBranchSize = getBranchLength(Graph, current->word);
-                if(currentBranchSize != 0 && currentBranchSize < smallestBranch && currentBranchSize % 2 == 1){
-                    smallestBranch = currentBranchSize;
+        int j;
+        int maxBranchSize = -__INT_MAX__;
+        for(i=0; i<numberOfSpells; ++i){
+            int current = Graph->adjList[i]->bracnhLength;
+            if(current >= maxBranchSize){
+                maxBranchSize = current;
+                j=i;
+            }
+        }
+
+        char* result = IAmThinking(myCopy, myCopy->adjList[j], true);
+
+        if(result == NULL){
+            int maxBracnhSize = -1;
+            struct Word* current = Graph->adjList[i]->nextWord;
+            struct Word* temp = NULL;
+            while(current != NULL){
+                if(current->bracnhLength >= maxBracnhSize){
+                    maxBracnhSize = current->bracnhLength;
                     temp = current;
                 }
-                current = current->nextWord;
             }
-            if(temp != NULL){
-                copyArray(temp->word, myChoice);
-            }
-            else{
-                copyArray(Graph->adjList[numberOfSpells/2]->word,myChoice);
-            }        
-        printf("My choice: %s\n", myChoice);
+            copyArray(temp->word, myChoice);
+        }
+        else{
+            copyArray(result, myChoice);
+        }
+
+
+
+        printf("My choice: %s", myChoice);
         
         for(i=0; i<numberOfSpells; ++i){
-            if(condition(myChoice, ArrayOfSpells[i]) && Graph->adjList[i]->branchLength != 0){
+            if(condition(myChoice, ArrayOfSpells[i]) && Graph->adjList[i]->bracnhLength != 0){
                 win = false;
                 break;
             }
@@ -650,7 +658,7 @@ int Rehle(struct Graph* Graph, bool myTurn){
                 printf("Oops I win \n");
                 return 1;
             }
-            if(current->branchLength == 0){
+            if(current->bracnhLength == 0){
                 printf("Congrats you win \n");
                 return 0;
             }
@@ -659,7 +667,7 @@ int Rehle(struct Graph* Graph, bool myTurn){
             struct Word* temp1 = NULL;
 
             // If there is no where to go we lose
-            if(current->branchLength == 0){
+            if(current->bracnhLength == 0){
                 printf("Congrats you win \n");
                 return 0;
             }
@@ -678,37 +686,36 @@ int Rehle(struct Graph* Graph, bool myTurn){
                     return 0;
                 }
             }
-            current = Graph->adjList[i];
-            struct Word* temp2 = NULL;
-            current = current->nextWord;
-            while(current != NULL){
-                if(!current->used){
-                    currentBranchSize = getBranchLength(Graph, current->word);
-                    if(currentBranchSize != 0 && currentBranchSize < smallestBranch && currentBranchSize % 2 == 0){
-                        smallestBranch = currentBranchSize;
-                        temp2 = current;
+
+            char* result = IAmThinking(Graph,oppChoice,false);
+            char* result = IAmThinking(Graph,oppChoice,false);
+
+            if(result == NULL){
+                int maxBracnhSize = -1;
+                struct Word* current = Graph->adjList[i]->nextWord;
+                struct Word* temp = NULL;
+                while(current != NULL){
+                    if(current->bracnhLength >= maxBracnhSize){
+                        maxBracnhSize = current->bracnhLength;
+                        temp = current;
                     }
-                current = current->nextWord;
+                }
+                copyArray(temp->word, myChoice);
             }
-        }
-        if(temp2 != NULL){
-            copyArray(temp2->word, myChoice);
-            temp2 = NULL;
-        }
-        else{
-            copyArray(temp1->word, myChoice);
-            temp1 = NULL;
-        }
+            else{
+                copyArray(result, myChoice);
+            }
 
-        printf("My choice: %s\n", myChoice);
 
-        for(i=0; i<numberOfSpells; ++i){
-            if(condition(myChoice, ArrayOfSpells[i]) && Graph->adjList[i]->branchLength != 0){
-                win = false;
-                break;
-            }
-            else win = true;
-            }
+            printf("My choice: %s", myChoice);
+
+            for(i=0; i<numberOfSpells; ++i){
+                if(condition(myChoice, ArrayOfSpells[i]) && Graph->adjList[i]->bracnhLength != 0){
+                    win = false;
+                    break;
+                }
+                else win = true;
+                }
             if(win){
                 printf("I win, you ran out of options! Ha Ha");
                 return 1;
