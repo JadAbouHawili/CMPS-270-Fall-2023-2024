@@ -15,20 +15,45 @@ struct StringStack {
 };
 
 // Initialize the stack
+/*
+ * @param: StringStack*
+ * @return: void
+ * requires: uninitialized StringStack
+ * effects: initializes it, making the StringStack detectable as empty
+ *
+ */
 void initializeStringStack(struct StringStack* stack) {
     stack->top = -1;
 }
 
+/*
+ *@param: StringStack*
+ *@return: int
+ * requires: initialized StringStack
+ * effects: check if its full or not(based on top)
+ */
 // Check if the stack is full
 int isStringStackFull(struct StringStack* stack) {
     return stack->top == MAX_SIZE - 1;
 }
 
+/*
+ * @param: StringStack*
+ * @return: int
+ * requires: initialized StringStack
+ * effects: checks if its empty(based on top)
+ */
 // Check if the stack is empty
 int isStringStackEmpty(struct StringStack* stack) {
     return stack->top == -1;
 }
 
+/*
+ * @param: StringStack*, char* (in that order)
+ * @return: void
+ * requires: correct order of parameters, initalized StringStack*
+ * effects: push a string, now the top of the stack is that string
+ */
 // Push a string onto the stack
 void pushString(struct StringStack* stack, char* value) {
     if (isStringStackFull(stack)) {
@@ -39,6 +64,12 @@ void pushString(struct StringStack* stack, char* value) {
     }
 }
 
+/*
+ * @param: StringStack*, char*
+ * @return: void
+ * required: corrected order of parameters, initalized StringStack*
+ * effects: pop a string and put it in the passed char pointer, now the top of the stack is what was under the popped element
+ */
 void pop(struct StringStack* stack, char* result) {
     if (isStringStackEmpty(stack)) {
         printf("Stack underflow\n");
@@ -49,7 +80,12 @@ void pop(struct StringStack* stack, char* result) {
     stack->top--;
 }
 
-
+/*
+ * @param: StringStack*
+ * @return: char*
+ * required: initalized StringStack*
+ * effects: pop a string and return it, now the top of the stack is what was under the popped element 
+ */
 // Pop a string from the stack
 char* popString(struct StringStack* stack) {
     if (isStringStackEmpty(stack)) {
@@ -60,6 +96,12 @@ char* popString(struct StringStack* stack) {
     }
 }
 
+/*
+ * @param: StringStack*
+ * @return: char*
+ * required: initialized StringStack*
+ * effects: return the top of the stack
+ */
 // Get the top string of the stack without removing it
 char* peekString(struct StringStack* stack) {
     if (isStringStackEmpty(stack)) {
@@ -70,6 +112,12 @@ char* peekString(struct StringStack* stack) {
     }
 }
 
+/*
+ * @param: StringStack*
+ * @return: void
+ * required: initialized StringStack*
+ * effects: print the content of the stack from top to bottom
+ */
 // Function to print the elements in the string stack
 void printStringStack(struct StringStack* stack) {
     if (isStringStackEmpty(stack)) {
@@ -90,6 +138,12 @@ struct Word{
 struct Graph{
     struct Word ** adjList;
 };
+/*
+ * @param: char[]
+ * @return: Word*
+ * requires: char[] type
+ * effects: creates Word* out of the pased word[]
+ */
 struct Word* createWord(char word[]){
     struct Word* newWord =  (struct Word*)malloc(sizeof(struct Word));
 
@@ -114,6 +168,12 @@ struct Word* createWord(char word[]){
 
     return newWord;
 }
+/* @param: none
+ * @return: int
+ * requires: file spells.txt with the appropriate formatting specified in the project
+ * effects: read spells and populate in arrayofspells
+ *
+ */
 int readSpells(){
     int i;
 
@@ -150,7 +210,12 @@ int readSpells(){
     fclose(fpointer);
     return 1;
 }
-
+/* @param: int
+ * @return: Graph*
+ * requires: positive integer
+ * effects: returns a Graph*, pointer to a Graph
+ *
+ */
 struct Graph * createGraph(int numWords){
     struct Graph * Graph = (struct Graph* ) malloc(sizeof(struct Graph));
 
@@ -163,6 +228,12 @@ struct Graph * createGraph(int numWords){
 
     return Graph;
 }
+/* @param: char[], char[]
+ * @return: bool
+ * requires: two arrays of words not pointers
+ * effects: returning a boolean of whether they are equal or not
+ *
+ */
 bool areEqual(char word1[], char word2[]){
     int size1 = 0;
     int size2 = 0;
@@ -186,6 +257,12 @@ bool areEqual(char word1[], char word2[]){
 
     return true;
 }
+/* @param: char[]
+ * @return: char
+ * requires: nonempty array of characters
+ * effects: returns the last character
+ *
+ */
 char lastCharOf(char word[]){
     int i = 0;
     while(word[i] != '\0'){
@@ -193,9 +270,21 @@ char lastCharOf(char word[]){
     }
     return word[i-1];
 }
+/* @param: char[], char[]
+ * @return: bool
+ * requires: two non empty arrays of char
+ * effect: if the last character of the first parameter is equal to the first character of the 2nd
+ *
+ */
 bool condition(char word1[], char word2[]){  
     return lastCharOf(word1) == word2[0];
 }
+/* @param: Graph*, char[], char[]
+ * @return: void
+ * requires: nonempty char arrays, nonempty graph
+ * effects: adds an edge, i.e an entry from the first char[] to the second in the adjacency list
+ *
+ */
 void addEdge(struct Graph * Graph, char source[], char destination[]){
     struct Word* newWord = createWord(destination);
     int i;
@@ -210,6 +299,12 @@ void addEdge(struct Graph * Graph, char source[], char destination[]){
         }
     }
 }
+/* @param: none
+ * @return: Graph*
+ * requires: global variables are defined : numberOfSpells, sizeOfSpells. arrayofspells have been populated by readspells method
+ * effects: builds the graph of possibilities for the game, based on rules of the game 
+ *
+ */
 struct Graph* buildGraph(){
     struct Graph* Graph = createGraph(numberOfSpells);
     char currentWord[sizeOfSpells];
@@ -231,6 +326,12 @@ struct Graph* buildGraph(){
     }
     return Graph;
 }
+/* @param: Graph*
+ * @return: void
+ * requires: populated graph
+ * effects: prints every word and the possibilities that might be chosen from that word
+ *
+ */
 void printGraph(struct Graph* Graph){
     int i;
     for(i=0; i<numberOfSpells; ++i){
@@ -250,6 +351,12 @@ void printGraph(struct Graph* Graph){
         printf("\n\n");
     }
 }
+/* @param: Graph*
+ * @return: void
+ * requires: populated graph
+ * effect: frees the allocated memory
+ *
+ */
 void freeGraph(struct Graph* Graph){
     int i;
     for(i=0; i<numberOfSpells; ++i){
@@ -267,6 +374,12 @@ void freeGraph(struct Graph* Graph){
     free(Graph->adjList);
     free(Graph);
 }
+/* @param: Graph*, char[]
+ * @return: int
+ * requires: populated graph, non empty char[]
+ * effects: -1 if not in adjacency list, returns its index otherwise
+ *
+ */
 int isInAdjList(struct Graph* Graph, char choice[]){
     int i;
     for(i=0; i<numberOfSpells; ++i){
@@ -276,6 +389,12 @@ int isInAdjList(struct Graph* Graph, char choice[]){
     }
     return -1;
 }
+/* @param: Graph*, char[]
+ * @return: void
+ * requires: populated graph, non empty char[]
+ * effects: when a word is used, mark it as used by changing the used attribute. update branch length accordingly
+ *
+ */
 void updateGraph(struct Graph* Graph, char choice[]){
     int i;
     for(i=0; i<numberOfSpells; ++i){
@@ -297,6 +416,12 @@ void updateGraph(struct Graph* Graph, char choice[]){
         }
     }
 }
+/* @param: int[], int
+ * @return: void
+ * requires: nonempty array, positive size
+ * effects: prints the array
+ *
+ */
 void printArray(int A[], int size){
     int i;
     for(i=0; i<size; ++i){
@@ -304,6 +429,12 @@ void printArray(int A[], int size){
     }
     printf("\n");
 }
+/* @param: Graph*, char[]
+ * @return: int
+ * requires: non empty graph, nonempty char[]
+ * effects: gets the length of the branch where Spell[] is located
+ *
+ */
 int getBranchLength(struct Graph* Graph, char Spell[]){
     int i;
     for(i=0; i<numberOfSpells; ++i){
@@ -313,6 +444,12 @@ int getBranchLength(struct Graph* Graph, char Spell[]){
     }
     return -1;
 }
+/* @param: char[], char[]
+ * @return: void
+ * requires: nonempty char arrays
+ * effects: copies the first to the second
+ *
+ */
 void copyArray(char Spell1[], char Spell2[]){
     int j = 0;
     while(Spell1[j] != '\0'){
@@ -321,6 +458,12 @@ void copyArray(char Spell1[], char Spell2[]){
     }
     Spell2[j] = '\0';
 }
+/*
+ * @param: Graph*
+ * @return: void
+ * requires: populated graph
+ * effects: sets all used flags for nodes in the graph to false
+ */
 void setFlagsToFalse(struct Graph* Graph){
     int i;
     for(i=0; i<numberOfSpells; ++i){
@@ -331,6 +474,12 @@ void setFlagsToFalse(struct Graph* Graph){
         }
     }
 }
+/* @param: Graph*, Word*
+ * @return: Word*
+ * requires: populated graph, non-null Word*
+ * effects: returns whether there is a possibility in the graph after our current position, i.e if we can keep playing. if not return null
+ *
+ */
 struct Word* hasNextPossibility(struct Graph* Graph, struct Word* Word){
     struct Word* current = Graph->adjList[(isInAdjList(Graph, Word->word))];
     if(current->branchLength == 0) {
@@ -347,6 +496,12 @@ struct Word* hasNextPossibility(struct Graph* Graph, struct Word* Word){
         return NULL;
     }
 }
+/* @param: Graph*, Word*, bool, char[]
+ * @return: void
+ * requires: populated graph, nonempty word, nonempty char[]
+ * effect: goes through possibilities on a stack, and determines whether just a chain of possibilities gives a win or not, and stores that choice in myChoice to be used later
+ *
+ */
 
 void IAmThinking(struct Graph* Graph, struct Word* Word, bool win, char myChoice[]){
     struct StringStack possibilities;
@@ -379,7 +534,12 @@ void IAmThinking(struct Graph* Graph, struct Word* Word, bool win, char myChoice
         current = current->nextWord;
     }
 }
-// Easy Mode
+/* @param: Graph*, bool
+ * @return: int
+ * reqires: populated graph
+ * effect: checks what valid choices there are, and picks one without much thought or analysis
+ *
+ */
 int Kazdoora(struct Graph* Graph, bool myTurn){
 
     char oppChoice[150];
@@ -515,6 +675,12 @@ int Kazdoora(struct Graph* Graph, bool myTurn){
 }
 
 // Medium Mode
+/* @param: Graph*, bool
+ * @return: int
+ * requires: populated graph
+ * effect: 
+ *
+ */
 int Rehle(struct Graph* Graph, bool myTurn){
     char oppChoice[150];
     char myChoice[150];
