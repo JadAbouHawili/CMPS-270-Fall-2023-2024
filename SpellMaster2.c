@@ -348,9 +348,11 @@ struct Word* hasNextPossibility(struct Graph* Graph, struct Word* Word){
     }
 }
 
-char* IAmThinking(struct Graph* Graph, struct Word* Word, bool* win){
+char* IAmThinking(struct Graph* Graph, struct Word* Word, bool win){
     struct StringStack possibilities;
     initializeStringStack(&possibilities);
+
+    bool initialState = win;
 
     struct Word* current = Graph->adjList[isInAdjList(Graph, Word->word)];
     current->used = true;
@@ -372,6 +374,7 @@ char* IAmThinking(struct Graph* Graph, struct Word* Word, bool* win){
             return myChoice;
         }
         setFlagsToFalse(Graph);
+        win = initialState;
         current = current->nextWord;
     }
     return NULL;
