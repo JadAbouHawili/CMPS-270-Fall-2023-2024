@@ -556,7 +556,7 @@ int Rehle(struct Graph* Graph, bool myTurn){
             }
         }
         myChoice[0] = '\0';
-        IAmThinking(Graph,createWord(oppChoice),false,myChoice);
+        IAmThinking(myCopy,createWord(oppChoice),false,myChoice);
 
         if(myChoice[0] == '\0'){
             int maxBranchSize = -1;
@@ -716,6 +716,7 @@ int Rehle(struct Graph* Graph, bool myTurn){
         }   
 }
 
+/*
 // Example usage
 int main() {
     struct StringStack stringStack;
@@ -732,22 +733,26 @@ int main() {
 
     return 0;
 }
-/*
+*/
+
 int main(){
     if(readSpells()!=-1){
         struct Graph* Graph = buildGraph();
         printGraph(Graph);
 
+        /*
             //randomize who starts first
         srand(time(NULL));
         bool myturn;
         if(rand() % 2 ==0) myturn=false;
         else myturn=true;
+        */
 
-        Rehle(Graph, myturn);
+
+        Rehle(Graph, true);
         freeGraph(Graph);
 
     }
     
 }
-    */
+    
