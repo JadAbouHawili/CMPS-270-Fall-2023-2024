@@ -922,3 +922,84 @@ int main(){
     
 }
     
+#define MAX_SIZE 1000
+#define MAX_STRING_SIZE 150
+
+// Define a stack structure for string arrays
+typedef struct {
+    char data[MAX_SIZE][MAX_STRING_SIZE];
+    int top;
+} StringArrayStack;
+
+// Function to initialize the string array stack
+void initialize(StringArrayStack* stack) {
+    stack->top = -1;
+}
+
+// Function to check if the string array stack is empty
+bool isEmpty(StringArrayStack* stack) {
+    return stack->top == -1;
+}
+
+// Function to check if the string array stack is full
+bool isFull(StringArrayStack* stack) {
+    return stack->top == MAX_SIZE - 1;
+}
+
+// Function to push a string array onto the stack
+void push(StringArrayStack* stack, const char str[]) {
+    if (isFull(stack)) {
+        printf("Stack overflow\n");
+        return;
+    }
+
+    stack->top++;
+    strncpy(stack->data[stack->top], str, MAX_STRING_SIZE - 1);
+    stack->data[stack->top][MAX_STRING_SIZE - 1] = '\0'; // Ensure null-termination
+}
+
+void pop(StringArrayStack* stack, char result[]) {
+    if (isEmpty(stack)) {
+        printf("Stack underflow\n");
+        return;
+    }
+
+    strncpy(result, stack->data[stack->top], MAX_STRING_SIZE);
+    stack->top--;
+}
+
+
+
+
+
+
+void IAmThinking(struct Graph* Graph, char oppChoice[], char myChoice[], bool win){
+    StringArrayStack possibilites;
+    initialize(&possibilites);
+    bool initialState = win;
+    int i = isInAdjList(Graph,oppChoice);
+    struct Word* current = Graph->adjList[i];
+    updateGraph(Graph, current->word);
+    int j;
+    for(j=0; j<current->bracnhLength; ++j){
+        struct Word* possGetter = hasNextPossibility(Graph, current);
+        push(&possibilites, possGetter->word);
+        win = !win;
+        updateGraph(Graph, possGetter->word);
+        while(possGetter != NULL){
+            push(&possibilites, possGetter->word);
+            printf("%s", possGetter->word);
+            win = !win;
+            possGetter = hasNextPossibility(Graph, possGetter->nextWord);
+        }
+        if(win){
+            while(!isEmpty(&possibilites)){
+                pop(&possibilites, myChoice);
+                break;
+            }
+        }
+        setFlagsToFalse(Graph);
+        win = initialState;
+        current = current->nextWord;
+    }
+}
