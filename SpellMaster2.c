@@ -1,13 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <time.h>
 #include <string.h>
 
+
+// Global Constants
 char** ArrayOfSpells;
 int numberOfSpells;
 int const sizeOfSpells = 150;
-#define MAX_SIZE 1000
+
 
 struct Word{
     char * word;
@@ -18,12 +19,12 @@ struct Word{
 struct Graph{
     struct Word ** adjList;
 };
-/*
- * @param: char[]
- * @return: Word*
- * requires: char[] type
- * effects: creates Word* out of the pased word[]
- */
+// @param: Char Array
+// Requires: A non-empty character array.
+// Effects: Constructs a new word structurs. The word attribute of the of the structure is initialized to the inputed array.
+//          The nextWord pointer attribute is initialized to NULL. The used boolean is initialized to false. 
+//          The length of the branch is initialized to 0. The newly constructed Word structure is returned.
+
 struct Word* createWord(char word[]){
     struct Word* newWord =  (struct Word*)malloc(sizeof(struct Word));
 
@@ -48,12 +49,10 @@ struct Word* createWord(char word[]){
 
     return newWord;
 }
-/* @param: none
- * @return: int
- * requires: file spells.txt with the appropriate formatting specified in the project
- * effects: read spells and populate in arrayofspells
- *
- */
+// @param: Nothing.
+// Requires: Nothing.
+// Effects: Loops through the file and stores each word in the 2D array of characters, allocating memory as needed. Assumes the file begins
+//          with the number of words. Returns 1 if the file is found, -1 otherwise.
 int readSpells(){
     int i;
 
@@ -90,30 +89,26 @@ int readSpells(){
     fclose(fpointer);
     return 1;
 }
-/* @param: int
- * @return: Graph*
- * requires: positive integer
- * effects: returns a Graph*, pointer to a Graph
- *
- */
-struct Graph * createGraph(int numWords){
+// @param: Nothing.
+// Requires: The existence of createWord and an execution of readSpells.
+// Effects: Constructs a new Graph object. Each word structure in the 2D array of Words is initialized to NULL, allocating memory as needed.
+//          The number of rows in the  adjaceny list is exactly the number of spells. Returns a newly constructed Graph Structure.
+
+struct Graph * createGraph(){
     struct Graph * Graph = (struct Graph* ) malloc(sizeof(struct Graph));
 
     Graph->adjList = (struct Word**)malloc(sizeof(struct Word*) * numberOfSpells);
 
     int i;
-    for(i=0; i<numWords; ++i){
+    for(i=0; i<numberOfSpells; ++i){
         Graph->adjList[i] = NULL;
     }
 
     return Graph;
 }
-/* @param: char[], char[]
- * @return: bool
- * requires: two arrays of words not pointers
- * effects: returning a boolean of whether they are equal or not
- *
- */
+// @param: Char Array 1, Char Array2
+// Requires: Two non-empty character arrays.
+// Effects: Returns true if the two arrays are equal, false otherwise.
 bool areEqual(char word1[], char word2[]){
     int size1 = 0;
     int size2 = 0;
@@ -137,12 +132,9 @@ bool areEqual(char word1[], char word2[]){
 
     return true;
 }
-/* @param: char[]
- * @return: char
- * requires: nonempty array of characters
- * effects: returns the last character
- *
- */
+// @param: Char Array
+// Requires: A non-empty Char Array
+// Effects: Returns the last character in the given array.
 char lastCharOf(char word[]){
     int i = 0;
     while(word[i] != '\0'){
@@ -150,21 +142,19 @@ char lastCharOf(char word[]){
     }
     return word[i-1];
 }
-/* @param: char[], char[]
- * @return: bool
- * requires: two non empty arrays of char
- * effect: if the last character of the first parameter is equal to the first character of the 2nd
- *
- */
+// @param: Char Array1, Char Array2
+// Requires: Two non-empty Char Arrays and the existence of lastCharOf method.
+// Effects: Returns true if the main game condition is satisfied false otherwise. The game conidition being that the last char of word1
+//          is the first character of word2
 bool condition(char word1[], char word2[]){  
     return lastCharOf(word1) == word2[0];
 }
-/* @param: Graph*, char[], char[]
- * @return: void
- * requires: nonempty char arrays, nonempty graph
- * effects: adds an edge, i.e an entry from the first char[] to the second in the adjacency list
- *
- */
+// @param: Graph Structure, Char Array source, Char Array destination
+// Requries: A Graph structure, and two non-empty char arrays. In addition, it requires the existence of createWor, the source is already
+//           in the adjaceny list, the areEqual method exists, and the game condition is satsified so of course it assumes the condition method
+//           exists.
+// Effects: Loops through the adjacency list and locates the source. If the source is pointing at null then the source points to the destination
+//          otherwise the destination is added at the end of the linked list at source.
 void addEdge(struct Graph * Graph, char source[], char destination[]){
     struct Word* newWord = createWord(destination);
     int i;
@@ -179,15 +169,14 @@ void addEdge(struct Graph * Graph, char source[], char destination[]){
         }
     }
 }
-/* @param: none
- * @return: Graph*
- * requires: global variables are defined : numberOfSpells, sizeOfSpells. arrayofspells have been populated by readspells method
- * effects: builds the graph of possibilities for the game, based on rules of the game 
- *
- */
+// @param: Nothing.
+// Requires: The existence of createGraph, createWord, addEdge, and condition method.
+// Effects: Creates a graph using the createGraph method. Loops through the array of spells and creates a word structure for each word
+//          using the createWord method, then it makes each pointer in the adjacenly list points at its corresponding created word.
+//          Loops through the array of spells and for each word it checks if there is another word that satififies the game conditions
+//          with it. If there is, it adds an edge between them. Returns a new manipulated Graph.
 struct Graph* buildGraph(){
-    struct Graph* Graph = createGraph(numberOfSpells);
-    char currentWord[sizeOfSpells];
+    struct Graph* Graph = createGraph();
 
     int i,j,k;
     for(i=0; i<numberOfSpells; ++i){
@@ -206,37 +195,24 @@ struct Graph* buildGraph(){
     }
     return Graph;
 }
-/* @param: Graph*
- * @return: void
- * requires: populated graph
- * effects: prints every word and the possibilities that might be chosen from that word
- *
- */
+// @param: Graph structure.
+// Requires: A non-empty Graph structure.
+// Effects: Prints the Graph in the form of adjacencyList and pointers.
 void printGraph(struct Graph* Graph){
     int i;
     for(i=0; i<numberOfSpells; ++i){
         struct Word* current= Graph->adjList[i];
         while(current != NULL){
-            if(current->used){
-                printf("[%s][%d](used)-> ", current->word, current->branchLength);
-                current = current->nextWord;
-                
-            }
-            else{
-                printf("[%s][%d](unused)-> ", current->word, current->branchLength);
-                current = current->nextWord;
-
-            }
+            printf("[%s][%d]-> ", current->word, current->branchLength);
+            current = current->nextWord;
         }
-        printf("\n\n");
+        printf("\n");
     }
 }
-/* @param: Graph*
- * @return: void
- * requires: populated graph
- * effect: frees the allocated memory
- *
- */
+// @param: Graph structure
+// Requires: A non-empty Graph structure
+// Effects: Traverses the Graph freeing the allocated memory for each word structure. Then it frees the memory allocated for the adjacency
+//          list and for the Graph itself. Nothing is returned.
 void freeGraph(struct Graph* Graph){
     int i;
     for(i=0; i<numberOfSpells; ++i){
@@ -254,12 +230,10 @@ void freeGraph(struct Graph* Graph){
     free(Graph->adjList);
     free(Graph);
 }
-/* @param: Graph*, char[]
- * @return: int
- * requires: populated graph, non empty char[]
- * effects: -1 if not in adjacency list, returns its index otherwise
- *
- */
+// @param: Graph Structure
+// Requires: A non-empty Graph structure and a non-empty char array and the existence of areEqual method.
+// Effects: Traverses the adjacency list to check if the word is in the adjacney list. If it is then the index at which the word is located 
+//          is found. Otherwise -1 is returned.
 int isInAdjList(struct Graph* Graph, char choice[]){
     int i;
     for(i=0; i<numberOfSpells; ++i){
@@ -269,12 +243,10 @@ int isInAdjList(struct Graph* Graph, char choice[]){
     }
     return -1;
 }
-/* @param: Graph*, char[]
- * @return: void
- * requires: populated graph, non empty char[]
- * effects: when a word is used, mark it as used by changing the used attribute. update branch length accordingly
- *
- */
+// @param: Graph structure, char array
+// Requires: A non-empty Graph structure and a non empty char array. The existence of areEqual and condition method.
+// EFfects: Makes sure that after each choice is made my the algorithm or the player the word is marked as used. Traverses the Graph and checks
+//          and locates the source and marks its used attribute as being used. It also decreases branch lengths as needed. Nothing is returned.
 void updateGraph(struct Graph* Graph, char choice[]){
     int i;
     for(i=0; i<numberOfSpells; ++i){
@@ -296,40 +268,9 @@ void updateGraph(struct Graph* Graph, char choice[]){
         }
     }
 }
-/* @param: int[], int
- * @return: void
- * requires: nonempty array, positive size
- * effects: prints the array
- *
- */
-void printArray(int A[], int size){
-    int i;
-    for(i=0; i<size; ++i){
-        printf("%d ", A[i]);
-    }
-    printf("\n");
-}
-/* @param: Graph*, char[]
- * @return: int
- * requires: non empty graph, nonempty char[]
- * effects: gets the length of the branch where Spell[] is located
- *
- */
-int getBranchLength(struct Graph* Graph, char Spell[]){
-    int i;
-    for(i=0; i<numberOfSpells; ++i){
-        if(areEqual(Graph->adjList[i]->word, Spell)){
-            return Graph->adjList[i]->branchLength;
-        }
-    }
-    return -1;
-}
-/* @param: char[], char[]
- * @return: void
- * requires: nonempty char arrays
- * effects: copies the first to the second
- *
- */
+// @param: Two non-empty char arrays.
+// Requires: Two non-char arrays.
+// Effects: Coppies the characters in Spell1 to those in Spell2. Nothing is returned.
 void copyArray(char Spell1[], char Spell2[]){
     int j = 0;
     while(Spell1[j] != '\0'){
@@ -338,121 +279,43 @@ void copyArray(char Spell1[], char Spell2[]){
     }
     Spell2[j] = '\0';
 }
-/*
- * @param: Graph*
- * @return: void
- * requires: populated graph
- * effects: sets all used flags for nodes in the graph to false
- */
-/*
-void setFlagsToFalse(struct Graph* Graph){
-    int i;
-    for(i=0; i<numberOfSpells; ++i){
-        struct Word* current = Graph->adjList[i];
-        while(current != NULL){
-            current->used = false;
-            current = current->nextWord;
-        }
-    }
-}
-*/
-/* @param: Graph*, Word*
- * @return: Word*
- * requires: populated graph, non-null Word*
- * effects: returns whether there is a possibility in the graph after our current position, i.e if we can keep playing. if not return null
- *
- */
-
-/*
-struct Word* hasNextPossibility(struct Graph* Graph, struct Word* Word){
-    struct Word* current = Graph->adjList[(isInAdjList(Graph, Word->word))];
-    if(current->branchLength == 0) {
-        return NULL;
-    }
-    else {
-        current = current->nextWord;
-        while(current != NULL){
-            if(!current->used){
-                return current;
-            }
-            current = current->nextWord;
-        }
-        return NULL;
-    }
-}
-*/
-/* @param: Graph*, Word*, bool, char[]
- * @return: void
- * requires: populated graph, nonempty word, nonempty char[]
- * effect: goes through possibilities on a stack, and determines whether just a chain of possibilities gives a win or not, and stores that choice in myChoice to be used later
- *
- */
-
-/*
-void IAmThinking(struct Graph* Graph, struct Word* Word, bool win, char myChoice[]){
-    struct StringStack possibilities;
-    initializeStringStack(&possibilities);
-
-    bool initialState = win;
-
-    struct Word* current = Graph->adjList[isInAdjList(Graph, Word->word)];
-    current->used = true;
-    struct Word* possGetter = NULL;
-    while(current != NULL){
-        possGetter = hasNextPossibility(Graph,current);
-        possGetter->used = true;
-        while(possGetter != NULL){
-            pushString(&possibilities, possGetter->word);
-            possGetter->used = true;
-            win = !(win);
-            possGetter = hasNextPossibility(Graph, possGetter);
-        }
-        if(win){
-            char temp[150];
-            while(!isStringStackEmpty(&possibilities)){
-                pop(&possibilities, myChoice);
-            }
-            copyArray(temp, myChoice);
-            return;
-        }
-        setFlagsToFalse(Graph);
-        win = initialState;
-        current = current->nextWord;
-    }
-}
-*/
-/* @param: Graph*, bool
- * @return: int
- * reqires: populated graph
- * effect: checks what valid choices there are, and picks one without much thought or analysis
- *
- */
-int easy(struct Graph* Graph, bool myTurn){
-
+// @param: Graph structure and boolean to indicate turns
+// Requires: A non-empty Graph structure and a boolean
+// Effects: Prompts the user for input or chooses a word form the graph depending on the boolean. Analysis is made to choose the words at 
+//          each turn. After each choice the update Graph method is called and the conditions of the game are evaluated. If the algorithm
+//          wins it will indicate so, if the player wins is will also indicate that. Returns 1 if the algorithm wins, -1 otherwise.
+int LetsPlay(struct Graph* Graph, bool myTurn){
     char oppChoice[150];
     char myChoice[150];
     int i;
+    int BranchLength;
+    int smallestBranch;
+    int longestBranch;
     bool win;
     if(!myTurn){
         printf("Enter your choice: ");
         scanf("%s", oppChoice);
 
-        // Check if the openents choice is in the list
+        ////////////////////////////////////////////////////
         i = isInAdjList(Graph, oppChoice);
         if(i == -1){
             printf("Your choice is not in the list. \n");
             printf("I win :)");
             return 1;
         }
-        struct Word* current = Graph->adjList[i];
-        int j = 0;
+        ////////////////////////////////////////////////////
 
-        // If there is no where to go we lose
-        if(current->branchLength == 0){
+
+        
+        struct Word* current = Graph->adjList[i];
+        BranchLength = current->branchLength;
+
+        ////////////////////////////////////////////////////
+        if(BranchLength == 0){
             printf("Congrats you win \n");
             return 0;
         }
-        else // We may have a choice
+        else
         {
             current = current->nextWord;
             while(current!= NULL){
@@ -466,16 +329,33 @@ int easy(struct Graph* Graph, bool myTurn){
                 return 0;
             }
         }
-        while(current->word[j] != '\0'){
-            myChoice[j] = current->word[j];
-            ++j;
-        }
-        myChoice[j] = '\0';
+        /////////////////////////////////////////////////////
 
+        longestBranch = -1;
+        int j;
+        int currentBranch;
+        current = Graph->adjList[i]->nextWord;
+        struct Word* temp = NULL;
+        for(j=0; j<BranchLength; ++j){
+            currentBranch = current->branchLength;
+            if(currentBranch >= longestBranch){
+                longestBranch = currentBranch;
+                temp = current;
+            }
+            current = current->nextWord;
+        }
+
+        copyArray(temp->word, myChoice);
         printf("My choice is: %s\n", myChoice);
 
-        for(i=0; i<numberOfSpells; ++i){
-            if(condition(myChoice, ArrayOfSpells[i]) && Graph->adjList[i]->branchLength != 0){
+
+        ///////////////////////////////////////////////////////
+        bool gameCondition;
+        bool used;
+        for(j=0; j<numberOfSpells; ++j){
+            gameCondition = condition(myChoice, ArrayOfSpells[j]);
+            used = Graph->adjList[j]->used;
+            if(gameCondition && !used){
                 win = false;
                 break;
             }
@@ -485,338 +365,8 @@ int easy(struct Graph* Graph, bool myTurn){
             printf("I win, you ran out of options! Ha Ha");
             return 1;
         }
-        updateGraph(Graph, myChoice);
-        updateGraph(Graph, oppChoice);
-    }
-    else{
-        i = 0;
-        while(Graph->adjList[numberOfSpells/ 2]->word[i] != '\0'){
-            myChoice[i] = Graph->adjList[numberOfSpells / 2]->word[i];
-            ++i;
-        }
-        myChoice[i] = '\0';
-        printf("My Choice: %s\n", myChoice);
-        updateGraph(Graph, myChoice);
-    }
-    while(true){
-            printf("Enter your choice: ");
-            scanf("%s", oppChoice);
-            i = isInAdjList(Graph, oppChoice);
-            if(i == -1){
-                printf("Your choice is not int he list. \n");
-                printf("I win :)");
-                return 1;
-            }
-            struct Word* current = Graph->adjList[i];
-            if(current->used){
-                printf("You chose a previously chosen world. \n");
-                printf("I win :)");
-                return 1;
-            }
-            if(!condition(myChoice, oppChoice)){
-                printf("You didn't choose a word whose first character is the last character of my previous choice \n");
-                printf("Oops I win \n");
-                return 1;
-            }
-            int j = 0;
-            if(current->branchLength == 0){
-                printf("Congrats you win \n");
-                return 0;
-            }
-            else {
-                current = current->nextWord;
-                while(current!= NULL){
-                    if(!current->used){
-                        break;
-                    }
-                    else current = current->nextWord;
-                }
-                if(current == NULL){
-                    printf("Congrats you win \n");
-                    return 0;
-                }
-            }
-            while(current->word[j] != '\0'){
-                myChoice[j] = current->word[j];
-                ++j;
-            }
-            myChoice[j] = '\0';
+        ////////////////////////////////////////////////////////
 
-            printf("My choice is: %s\n", myChoice);
-
-            for(i=0; i<numberOfSpells; ++i){
-            if(condition(myChoice, ArrayOfSpells[i]) && Graph->adjList[i]->branchLength != 0){
-                win = false;
-                break;
-            }
-            else win = true;
-            }
-            if(win){
-                printf("I win, you ran out of options! Ha Ha");
-                return 1;
-            }
-
-            updateGraph(Graph, myChoice);
-            updateGraph(Graph, oppChoice);
-        }   
-}
-
-*/
-/* @param: Graph*, bool
- * @return: int
- * reqires: populated graph
- * effect: checks what valid choices there are, and picks one through doing more analysis on the branches
- *
- */
-int medium(struct Graph* Graph, bool myTurn){
-
-    char oppChoice[150];
-    char myChoice[150];
-    int i;
-    bool win;
-    if(!myTurn){
-        printf("Enter your choice: ");
-        scanf("%s", oppChoice);
-
-        // Check if the openents choice is in the list
-        i = isInAdjList(Graph, oppChoice);
-        if(i == -1){
-            printf("Your choice is not in the list. \n");
-            printf("I win :)");
-            return 1;
-        }
-
-
-        struct Word* current = Graph->adjList[i];
-        int j = 0;
-
-        int branchLength = current->bracnhLength;
-
-        // If there is no where to go we lose
-        if(current->bracnhLength == 0){
-            printf("Congrats you win \n");
-            return 0;
-        }
-        else // We may have a choice
-        {
-            current = current->nextWord;
-            while(current!= NULL){
-                if(!current->used){
-                    break;
-                }
-                else current = current->nextWord;
-            }
-            if(current == NULL){
-                printf("Congrats you win \n");
-                return 0;
-            }
-        }
-        int smallestBracnh = __INT_MAX__;
-        struct Word* temp = NULL;
-        current = Graph->adjList[i];
-        current = current->nextWord;
-        for(i=0; i<branchLength; ++i){
-            if(current->bracnhLength < smallestBracnh && !current->used){
-                smallestBracnh = branchLength;
-                temp = current;
-            }
-            current = current->nextWord;
-        }
-
-        copyArray(temp->word, myChoice);
-
-        for(i=0; i<numberOfSpells; ++i){
-            if(condition(myChoice, ArrayOfSpells[i]) && Graph->adjList[i]->bracnhLength != 0){
-                win = false;
-                break;
-            }
-            else win = true;
-        }
-        if(win){
-            printf("I win, you ran out of options! Ha Ha");
-            return 1;
-        }
-        updateGraph(Graph, myChoice);
-        updateGraph(Graph, oppChoice);
-    }
-    else{
-        int j;
-        int smallestBranch = __INT_MAX__;
-        struct Word* temp = NULL;
-        for(i=0; i<numberOfSpells; ++i){
-            struct Word* current = Graph->adjList[i];
-            for(j=0; j<current->bracnhLength; ++j){
-                if(current->bracnhLength < smallestBranch && !current->used){
-                smallestBranch = current->bracnhLength;
-                temp = current;
-                current = current->nextWord;
-            }
-        }
-
-        copyArray(temp->word, myChoice);
-
-        printf("My Choice: %s", myChoice);
-
-        for(i=0; i<numberOfSpells; ++i){
-            if(condition(myChoice, ArrayOfSpells[i]) && Graph->adjList[i]->bracnhLength != 0){
-                win = false;
-                break;
-            }
-            else win = true;
-        }
-        if(win){
-            printf("I win, you ran out of options! Ha Ha");
-            return 1;
-        }
-        updateGraph(Graph, myChoice);
-    }
-    while(true){
-            printf("Enter your choice: ");
-            scanf("%s", oppChoice);
-            i = isInAdjList(Graph, oppChoice);
-            if(i == -1){
-                printf("Your choice is not int he list. \n");
-                printf("I win :)");
-                return 1;
-            }
-            struct Word* current = Graph->adjList[i];
-            if(current->used){
-                printf("You chose a previously chosen world. \n");
-                printf("I win :)");
-                return 1;
-            }
-            if(!condition(myChoice, oppChoice)){
-                printf("You didn't choose a word whose first character is the last character of my previous choice \n");
-                printf("Oops I win \n");
-                return 1;
-            }
-            int j = 0;
-            int branchLength = current->bracnhLength;
-            if(branchLength == 0){
-                printf("Congrats you win \n");
-                return 0;
-            }
-            else {
-                current = current->nextWord;
-                while(current!= NULL){
-                    if(!current->used){
-                        break;
-                    }
-                    else current = current->nextWord;
-                }
-                if(current == NULL){
-                    printf("Congrats you win \n");
-                    return 0;
-                }
-            }
-
-            int smallestBracnh = __INT_MAX__;
-            struct Word* temp = NULL;
-            current = Graph->adjList[i];
-            current = current->nextWord;
-            for(i=0; i<branchLength; ++i){
-                if(current->bracnhLength < smallestBracnh && !current->used){
-                    smallestBracnh = branchLength;
-                    temp = current;
-                }
-                current = current->nextWord;
-            }
-
-        copyArray(temp->word, myChoice);
-
-            for(i=0; i<numberOfSpells; ++i){
-            if(condition(myChoice, ArrayOfSpells[i]) && Graph->adjList[i]->bracnhLength != 0){
-                win = false;
-                break;
-            }
-            else win = true;
-            }
-            if(win){
-                printf("I win, you ran out of options! Ha Ha");
-                return 1;
-            }
-
-            updateGraph(Graph, myChoice);
-            updateGraph(Graph, oppChoice);
-        }   
-    }
-}
-
-*/
-/* @param: Graph*, bool
- * @return: int
- * reqires: populated graph
- * effect: checks what valid choices there are, and picks one through doing stronger analysis on the branches
- *
- */
-int hard(struct Graph* Graph, bool myTurn){
-
-    char oppChoice[150];
-    char myChoice[150];
-    int i;
-    bool win;
-    if(!myTurn){
-        printf("Enter your choice: ");
-        scanf("%s", oppChoice);
-
-        // Check if the openents choice is in the list
-        i = isInAdjList(Graph, oppChoice);
-        if(i == -1){
-            printf("Your choice is not in the list. \n");
-            printf("I win :)");
-            return 1;
-        }
-
-
-        struct Word* current = Graph->adjList[i];
-        int j = 0;
-
-        int branchLength = current->bracnhLength;
-
-        // If there is no where to go we lose
-        if(current->bracnhLength == 0){
-            printf("Congrats you win \n");
-            return 0;
-        }
-        else // We may have a choice
-        {
-            current = current->nextWord;
-            while(current!= NULL){
-                if(!current->used){
-                    break;
-                }
-                else current = current->nextWord;
-            }
-            if(current == NULL){
-                printf("Congrats you win \n");
-                return 0;
-            }
-        }
-        int smallestBracnh = __INT_MAX__;
-        struct Word* temp = NULL;
-        current = Graph->adjList[i];
-        current = current->nextWord;
-        for(i=0; i<branchLength; ++i){
-            if(current->bracnhLength < smallestBracnh && !current->used){
-                smallestBracnh = branchLength;
-                temp = current;
-            }
-            current = current->nextWord;
-        }
-
-        copyArray(temp->word, myChoice);
-
-        for(i=0; i<numberOfSpells; ++i){
-            if(condition(myChoice, ArrayOfSpells[i]) && Graph->adjList[i]->bracnhLength != 0){
-                win = false;
-                break;
-            }
-            else win = true;
-        }
-        if(win){
-            printf("I win, you ran out of options! Ha Ha");
-            return 1;
-        }
         updateGraph(Graph, myChoice);
         updateGraph(Graph, oppChoice);
     }
@@ -824,33 +374,37 @@ int hard(struct Graph* Graph, bool myTurn){
         bool found = false;
         for(i=0; i<numberOfSpells; ++i){
             struct Word* current = Graph->adjList[i];
-            if(current->bracnhLength == 0){
+            if(current->branchLength == 0){
                 copyArray(current->word, myChoice);
                 found = true;
                 break;
             }
         }
-        if(!found){
-            int j;
-            int smallestBranch = __INT_MAX__;
-            struct Word* temp = NULL;
+        if(found){
+            printf("My Choice: %s\n", myChoice);
+        }
+        else{
+            longestBranch = -1;
+            struct Word* temp1 = NULL;
+            int currentLength;
             for(i=0; i<numberOfSpells; ++i){
                 struct Word* current = Graph->adjList[i];
-                for(j=0; j<current->bracnhLength; ++j){
-                    if(current->bracnhLength < smallestBranch && !current->used){
-                    smallestBranch = current->bracnhLength;
-                    temp = current;
-                    current = current->nextWord;
+                currentLength = current->branchLength;
+                if(currentLength >= longestBranch){
+                    longestBranch = currentLength;
+                    temp1 = current;
                 }
             }
-
-        copyArray(temp->word, myChoice);
+            copyArray(temp1->nextWord->word, myChoice);
+            printf("My Choice: %s\n", myChoice);
         }
-
-        printf("My Choice: %s", myChoice);
-
+        /////////////////////////////////////////////////////////////
+        bool gameCondition;
+        bool used;
         for(i=0; i<numberOfSpells; ++i){
-            if(condition(myChoice, ArrayOfSpells[i]) && Graph->adjList[i]->bracnhLength != 0){
+            gameCondition = condition(myChoice, ArrayOfSpells[i]);
+            used = Graph->adjList[i]->used;
+            if(gameCondition && !used){
                 win = false;
                 break;
             }
@@ -860,31 +414,37 @@ int hard(struct Graph* Graph, bool myTurn){
             printf("I win, you ran out of options! Ha Ha");
             return 1;
         }
+        //////////////////////////////////////////////////////////////
         updateGraph(Graph, myChoice);
     }
     while(true){
             printf("Enter your choice: ");
             scanf("%s", oppChoice);
             i = isInAdjList(Graph, oppChoice);
+
+            /////////////////////////////////////////////////
             if(i == -1){
                 printf("Your choice is not int he list. \n");
                 printf("I win :)");
                 return 1;
             }
+            /////////////////////////////////////////////////
+
             struct Word* current = Graph->adjList[i];
+            BranchLength = current->branchLength;
             if(current->used){
                 printf("You chose a previously chosen world. \n");
                 printf("I win :)");
                 return 1;
             }
+            ///////////////////////////////////////////////////
             if(!condition(myChoice, oppChoice)){
                 printf("You didn't choose a word whose first character is the last character of my previous choice \n");
                 printf("Oops I win \n");
                 return 1;
             }
-            int j = 0;
-            int branchLength = current->bracnhLength;
-            if(branchLength == 0){
+            ////////////////////////////////////////////////////
+            if( BranchLength == 0){
                 printf("Congrats you win \n");
                 return 0;
             }
@@ -901,57 +461,60 @@ int hard(struct Graph* Graph, bool myTurn){
                     return 0;
                 }
             }
-
-            int smallestBracnh = __INT_MAX__;
-            struct Word* temp = NULL;
-            current = Graph->adjList[i];
-            current = current->nextWord;
-            for(i=0; i<branchLength; ++i){
-                if(current->bracnhLength < smallestBracnh && !current->used){
-                    smallestBracnh = branchLength;
-                    temp = current;
-                }
-                current = current->nextWord;
-            }
-
-        copyArray(temp->word, myChoice);
-
+            bool found = false;
             for(i=0; i<numberOfSpells; ++i){
-            if(condition(myChoice, ArrayOfSpells[i]) && Graph->adjList[i]->bracnhLength != 0){
-                win = false;
-                break;
+            struct Word* current = Graph->adjList[i];
+                if(current->branchLength == 0 && condition(oppChoice, current->word)){
+                    copyArray(current->word, myChoice);
+                    found = true;
+                    break;
+                }
             }
-            else win = true;
+            if(found){
+                printf("My choice is: %s \n", myChoice);
+            }
+            else{
+                longestBranch = -1;
+                int j;
+                int currentBranch;
+                // current = Graph->adjList[i]->nextWord;
+                struct Word* temp = NULL;
+                for(j=0; j<BranchLength; ++j){
+                    currentBranch = current->branchLength;
+                    if(currentBranch >= longestBranch){
+                        longestBranch = currentBranch;
+                        temp = current;
+                    }
+                    current = current->nextWord;
+                }
+                copyArray(temp->word, myChoice);
+                printf("My choice is: %s\n", myChoice);
+            }   
+            ///////////////////////////////////////////////////////////
+            bool gameCondition;
+            bool used;
+            for(i=0; i<numberOfSpells; ++i){
+                gameCondition = condition(myChoice, ArrayOfSpells[i]);
+                used = Graph->adjList[i]->used;
+                if(gameCondition && !used){
+                    win = false;
+                    break;
+                }
+                else win = true;
             }
             if(win){
                 printf("I win, you ran out of options! Ha Ha");
                 return 1;
             }
-
+            ///////////////////////////////////////////////////////////
             updateGraph(Graph, myChoice);
             updateGraph(Graph, oppChoice);
         }   
-    }
 }
 
 int main(){
-    if(readSpells()!=-1){
-        struct Graph* Graph = buildGraph();
-        printGraph(Graph);
-
-        
-            //randomize who starts first
-        srand(time(NULL));
-        bool myturn;
-        if(rand() % 2 ==0) myturn=false;
-        else myturn=true;
-        
-
-
-        easy(Graph, myturn);
-        freeGraph(Graph);
-
-    }
-    
+    readSpells();
+    struct Graph* Graph = buildGraph();
+    LetsPlay(Graph, false);
+    freeGraph(Graph);
 }
-
